@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VitaVista Login</title>
+  <style>
+    :root {
+      --gold: #d4af37;
+      --black: #0e0e0e;
+      --dark-gray: #1a1a1a;
+      --input-bg: #2b2b2b;
+      --text-light: #f0f0f0;
+      --squircle-radius: 16px;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--black);
+      color: var(--text-light);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background-color: var(--dark-gray);
+      padding: 48px;
+      border-radius: var(--squircle-radius);
+      box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-container h1 {
+      text-align: center;
+      color: var(--gold);
+      margin-bottom: 40px;
+      font-size: 2.2em;
+      letter-spacing: 2px;
+    }
+
+    .login-container input[type="text"],
+    .login-container input[type="password"] {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 20px;
+      border: none;
+      border-radius: var(--squircle-radius);
+      background-color: var(--input-bg);
+      color: var(--text-light);
+      font-size: 1em;
+    }
+
+    .login-container input[type="submit"] {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--gold);
+      border: none;
+      border-radius: var(--squircle-radius);
+      font-size: 1em;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .login-container input[type="submit"]:hover {
+      background-color: #b89430;
+    }
+
+    .divider {
+      text-align: center;
+      margin: 25px 0;
+      color: #888;
+    }
+
+    .google-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #fff;
+      color: #000;
+      font-weight: 500;
+      padding: 14px;
+      width: 100%;
+      border: none;
+      border-radius: var(--squircle-radius);
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .google-btn:hover {
+      background-color: #f2f2f2;
+    }
+
+    .google-btn img {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+    }
+
+    .footer-text {
+      margin-top: 25px;
+      text-align: center;
+      font-size: 0.9em;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>VitaVista</h1>
+    <form>
+      <input type="text" placeholder="Username or Email" required />
+      <input type="password" placeholder="Password" required />
+      <input type="submit" value="Login" />
+    </form>
+
+    <div class="divider">OR</div>
+
+    <button class="google-btn">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" />
+      Continue with Google
+    </button>
+
+    <div class="footer-text">
+      Forgot your password?
+    </div>
+  </div>
+</body>
+</html>

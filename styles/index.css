@@ -6,5 +6,15 @@ body {
     font-size: 1rem;
     margin-top: 70px;
     margin-left: 0px; margin-right: 0px;
-    height: 2000px;
+    height: 3000px;
+
+}
+
+section {
+    padding: 40px 0;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 30px;
 }

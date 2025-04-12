@@ -5,10 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     
+    
     <link rel="stylesheet" href="styles/header.css">
     <link rel="stylesheet" href="styles/index.css">
     <link rel="stylesheet" href="styles/first.css">
     <link rel="stylesheet" href="styles/room.css">
+    <link rel="stylesheet" href="styles/map.css">
+
+    <script src="scripts/map.js" defer></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,7 +27,7 @@
             <a href="#amenities">Amenities</a>
             <a href="#location">Location</a>
             <a href="#contact">Contact</a>
-           <button class="login">
+            <a href="login.html"><button class="login">
                 Login or Sign Up
             </button></a>
         </nav>
@@ -166,6 +171,11 @@
             <!-- Add more room cards -->
         </div>
 
+    <section>
+        <div class="section-title">
+            <h2>Prime Location</h2>
+        </div>
+        <div id="map"></div>
     </section>
 </body>
 </html>
