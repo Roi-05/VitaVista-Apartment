@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="styles/room.css">
     <link rel="stylesheet" href="styles/map.css">
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+
     <script src="scripts/map.js" defer></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
@@ -25,7 +27,7 @@
         <nav class="nav-links">
             <a href="#rooms">Rooms</a>
             <a href="#amenities">Amenities</a>
-            <a href="#location">Location</a>
+            <a href="#map-section">Location</a>
             <a href="#contact">Contact</a>
             <a href="login.html"><button class="login">
                 Login or Sign Up
@@ -35,6 +37,10 @@
     </header>
 
     <section class="first">
+        <video autoplay muted loop class="background-video">
+            <source src="Pictures/asdad.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
         <div class="first-content">
             <h1>Luxury Apartment Residences</h1>
             <p>Experience Sophisticated Urban Living</p>
@@ -171,7 +177,7 @@
             <!-- Add more room cards -->
         </div>
 
-    <section>
+    <section id="map-section">
         <div class="section-title">
             <h2>Prime Location</h2>
         </div>

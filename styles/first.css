@@ -1,7 +1,5 @@
 .first {
     height: 100vh;
-    background-image: url('/Pictures/slep.jpg');
-    background-position: center;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -17,4 +15,14 @@
 .first-content p {
     font-size: 1.5rem;
     margin-bottom: 2rem;
+}
+
+.background-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1; /* Place the video behind the content */
 }
