@@ -49,6 +49,7 @@
 
 .room-details {
     padding: 1.5rem;
+    position: relative;
 }
 
 .room-details h3 {
@@ -67,7 +68,14 @@
 }
 
 .room-price {
+    padding-top: 20px;
     color: gold;
     font-size: 1.5rem;
     font-weight: bold;
+}
+
+.view-more {
+    position: absolute;
+    left: 65px;
+    bottom: 90px;
 }
