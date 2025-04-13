@@ -1,0 +1,67 @@
+body {
+    padding-top: 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.image-slideshow {
+    height: 80vh;
+    width: 70vw;
+}
+
+#slideshow-main {
+    height: 100%; width: 100%;
+    border: 30px ridge rgb(180, 154, 10);
+    box-sizing: border-box;
+}
+
+#slideshow-container {
+    position: relative;
+    text-align: center;
+    width: 100%;
+    height: 100%; /* Set a fixed height for the container */
+    box-sizing: border-box;
+}
+
+.slideshow-controls {
+    position: absolute;
+    padding-left: 42px;
+    top: 50%;
+    width: 92%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+}
+
+.slideshow-controls button {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.5rem;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none; 
+    border-radius: 50%;
+    cursor: pointer; 
+    transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+.slideshow-controls button:hover {
+    background-color: rgba(255, 255, 255, 0.8); 
+    transform: scale(1.1);
+}
+.slideshow-controls button:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+}
+
+.room-details {
+    width: 25vw;
+    height: 80vh;
+    padding-left: 20px;
+    padding-right: 20px;
+    overflow-y: auto;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
