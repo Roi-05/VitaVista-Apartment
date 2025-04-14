@@ -24,21 +24,21 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    z-index: -1; /* Place the video behind the content */
+    z-index: -1;
 }
 
 .bookbutton {
-    background-color: #000; /* Black background */
-    color: #fff; /* White text */
-    padding: 10px 20px; /* Adjust padding for size */
-    border: none; /* Remove default border */
-    border-radius: 20px; /* Rounded corners for square-circle shape */
-    font-size: 1rem; /* Adjust font size */
-    font-family: Roboto, Arial, sans-serif; /* Match font with the rest of the page */
-    cursor: pointer; /* Pointer cursor on hover */
-    transition: background-color 0.3s ease; /* Smooth hover effect */
+    background-color: #000;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    font-size: 1rem;
+    font-family: Roboto, Arial, sans-serif;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .bookbutton:hover {
-    background-color: #333; /* Slightly lighter black on hover */
+    background-color: #333;
 }
