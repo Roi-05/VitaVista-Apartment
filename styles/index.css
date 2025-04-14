@@ -6,8 +6,11 @@ body {
     font-size: 1rem;
     margin-top: 70px;
     margin-left: 0px; margin-right: 0px;
-    height: 3000px;
+    height: 3700px;
 
 }
 
+button:hover {
+    cursor: pointer;
+}
 

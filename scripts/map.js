@@ -6,7 +6,7 @@ const map = L.map('map').setView([14.982806366091523, 120.48461305712443], 50);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 // Add a marker with responsive images in the popup
-L.marker([14.982806366091523, 120.48461305712443])
+const marker = L.marker([14.982806366091523, 120.48461305712443])
     .addTo(map)
     .bindPopup(`
         <div class="popup-content">
@@ -19,10 +19,9 @@ L.marker([14.982806366091523, 120.48461305712443])
                 </div>
             </div>
         </div>`,
-        { maxWidth: 600, minWidth: 500,  maxHeight: 400}
+        { maxWidth: 600, minWidth: 500, maxHeight: 400 }
     );
 
-// JavaScript for slideshow functionality
 let currentImageIndex = 0;
 const images = [
     "Pictures/jay.jpg",
@@ -35,11 +34,7 @@ const images = [
 function updateSlideshow() {
     const mainImage = document.getElementById("slideshow-main");
     if (mainImage) {
-        mainImage.classList.remove("show"); // Remove the "show" class
-        setTimeout(() => {
-            mainImage.src = images[currentImageIndex]; // Update the image source
-            mainImage.classList.add("show"); // Add the "show" class for the fade effect
-        }, 100); // Delay to allow the fade-out effect
+        mainImage.src = images[currentImageIndex];
     }
 }
 

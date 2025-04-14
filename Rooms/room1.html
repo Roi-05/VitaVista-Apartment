@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/styles/header.css">
+    <link rel="stylesheet" href="/styles/room-details.css">
+    <script src="/scripts/rooms.js"></script>
+</head>
+<body>
+    <header class="header">
+        <a href="#" class="logo">Vita<span>Vista</span></a>
+        <nav class="nav-links">
+            <a href="/index.html">Home</a>
+            <a href="#rooms">Rooms</a>
+            <a href="#map-section">Location</a>
+            <a href="#contact">Contact</a>
+            <a href="login.html"><button class="login">
+                Login or Sign Up
+            </button></a>
+        </nav>
+    </header>
+
+    <div class="image-slideshow">
+        <div id="slideshow-container">
+            <img id="slideshow-main" src="../Pictures/room1.jpg" alt="Room Image">
+            <div class="slideshow-controls">
+                <button onclick="prevImage()">&#10094;</button>
+                <button onclick="nextImage()">&#10095;</button>
+            </div>
+        </div>
+    </div>
+    <div class="room-details">
+        <h1>Details</h1>
+        <h3>Room 1</h3>
+        <ul class="room-features">
+            <li>🛏️ 3 Bedrooms</li>
+            <li>🛁 3.5 Bathrooms</li>
+            <li>📏 220 m²</li>
+            <li>🌆 City View</li>
+            <li>🛏️ 3 Bedrooms</li>
+            <li>🛁 3.5 Bathrooms</li>
+            <li>📏 220 m²</li>
+            <li>🌆 City View</li>
+            <li>🛏️ 3 Bedrooms</li>
+            <li>🛁 3.5 Bathrooms</li>
+            <li>📏 220 m²</li>
+            <li>🌆 City View</li>
+            <li>🛏️ 3 Bedrooms</li>
+            <li>🛁 3.5 Bathrooms</li>
+            <li>📏 220 m²</li>
+            <li>🌆 City View</li>
+        </ul>
+    </div>
+
+    <script>
+        let currentImageIndex = 0;
+        const images = [
+            "../Pictures/room2.jpg",
+            "../Pictures/room3.jpg",
+            "../Pictures/room4.jpg"
+        ];
+
+        function updateSlideshow() {
+            const mainImage = document.getElementById("slideshow-main");
+            if (mainImage) {
+                mainImage.src = images[currentImageIndex];
+            }
+        }
+
+        function prevImage() {
+            currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+            updateSlideshow();
+        }
+
+        function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+            updateSlideshow();
+        }
+    </script>
+</body>
+</html>

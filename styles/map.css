@@ -1,4 +1,10 @@
+#map-section {
+    padding-top: 100px;
+}
+
 #map {
+    position: relative;
+    z-index: 1;
     height:75vh;
     width: 80vw;
     margin: 4rem;
@@ -16,8 +22,8 @@
     max-height: 400px;
     overflow: hidden;
     margin: 0; padding: 0;
-    background-color: white;
     border-radius: 10px;
+    
 }
 
 .popup-content img {
@@ -40,21 +46,19 @@ span {
     position: relative;
     text-align: center;
     width: 100%;
-    height: 300px;
+    height: 300px; /* Set a fixed height for the container */
+    box-sizing: border-box;
+    margin: 0; padding: 0;
+    background-color: white;
 }
 
 #slideshow-main {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: 100%; /* Ensure the image fully occupies the container's height */
+    object-fit: cover; /* Maintain the aspect ratio while covering the container */
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    display: block;
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-}
-#slideshow-main.show {
-    opacity: 1;
+    overflow: hidden;
 }
 
 .slideshow-controls {
@@ -67,20 +71,23 @@ span {
 }
 
 .slideshow-controls button {
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 50%;
-    cursor: pointer;
+    width: 3rem;
+    height: 3rem;
     font-size: 1.5rem;
-    transition: background-color 0.3s;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none; 
+    border-radius: 50%;
+    cursor: pointer; 
+    transition: transform 0.2s ease, background-color 0.3s ease;
 }
 
 .slideshow-controls button:hover {
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(255, 255, 255, 0.8); 
+    transform: scale(1.1);
+}
+.slideshow-controls button:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
 }
 
-#slideshow-container .slideshow-main {
-  width: 100%; height: 100%;
-}
