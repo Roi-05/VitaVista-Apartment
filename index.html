@@ -12,10 +12,13 @@
     <link rel="stylesheet" href="styles/room.css">
     <link rel="stylesheet" href="styles/map.css">
     <link rel="stylesheet" href="styles/contact.css">
+    <link rel="stylesheet" href="styles/chat.css">
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <script src="scripts/map.js" defer></script>
+    <script src="scripts/chat.js" defer></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,6 +39,23 @@
         </nav>
        
     </header>
+
+        <div class="chatbox-container">
+            <div class="chat-window">
+                <div class="chat-header">
+                    <h3>Chat The Owner</h3>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div class="chat-body"></div>
+                <div class="chat-input">
+                    <input type="text" placeholder="Type your message...">
+                    <button class="send-btn">Send</button>
+                </div>
+            </div>
+            <div class="chat-button">
+                <i style="font-size: 2rem;" class="fas fa-comment-dots"></i>
+            </div>
+        </div>
 
     <section id="first" class="first">
         <video autoplay muted loop class="background-video">
@@ -142,7 +162,7 @@
                         <li>📏 220 m²</li>
                         <li>🌆 City View</li>
                     </ul>
-                    <a href="Rooms/room1.html"><button class="view-more">View More</button></a>
+                    <a href="Rooms/room2.html"><button class="view-more">View More</button></a>
                 </div>
             </div>
             <div class="room-card">
@@ -157,7 +177,7 @@
                         <li>📏 220 m²</li>
                         <li>🌆 City View</li>
                     </ul>
-                    <a href="Rooms/room1.html"><button class="view-more">View More</button></a>
+                    <a href="Rooms/room3.html"><button class="view-more">View More</button></a>
                 </div>
             </div>
             <div class="room-card">
@@ -172,7 +192,7 @@
                         <li>📏 220 m²</li>
                         <li>🌆 City View</li>
                     </ul>
-                    <a href="Rooms/room1.html"><button class="view-more">View More</button></a>
+                    <a href="Rooms/room4.html"><button class="view-more">View More</button></a>
                 </div>
             </div>
             <!-- Add more room cards -->
@@ -186,23 +206,44 @@
     </section>
 
     <section id="contact" class="contact">
-        <h1>Contact </h1>
+        <div class="info">
+            <p class="connect-with-us">Connect with us!</p>
+            <p style="color: white;">We'd love to hear from you.</p>
+        </div>
         <div class="contact-container">
             <div>
-                <h2>&#128222</h2>
-                <p>09876543210</p>
+                <div class="logo-container">
+                    <i class="fa-solid fa-phone" style="color: #049f33; font-size: 2.5rem;"></i>
+                </div>
+                <div>
+                    <p>+1 234 567 890</p>
+                </div>
             </div>
             <div>
-                <h2>&#128233</h2>
-                <p>ernestogomez@gmail.com</p>
+                <div class="logo-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="48" height="48" viewBox="0 0 48 48">
+                        <path fill="#4caf50" d="M45,16.2l-5,2.75l-5,4.75L35,40h7c1.657,0,3-1.343,3-3V16.2z"></path><path fill="#1e88e5" d="M3,16.2l3.614,1.71L13,23.7V40H6c-1.657,0-3-1.343-3-3V16.2z"></path><polygon fill="#e53935" points="35,11.2 24,19.45 13,11.2 12,17 13,23.7 24,31.95 35,23.7 36,17"></polygon><path fill="#c62828" d="M3,12.298V16.2l10,7.5V11.2L9.876,8.859C9.132,8.301,8.228,8,7.298,8h0C4.924,8,3,9.924,3,12.298z"></path><path fill="#fbc02d" d="M45,12.298V16.2l-10,7.5V11.2l3.124-2.341C38.868,8.301,39.772,8,40.702,8h0 C43.076,8,45,9.924,45,12.298z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <p href="">vitavilla@gmail.com</p>
+                </div>
             </div>
             <div>
-                <h2>Facebook</h2>
-                <p>Ernesto Gomez</p>
+                <div class="logo-container">
+                    <i class="fa-brands fa-facebook fa-sm fa-bounce" style="color: #3253e6;"></i>
+                </div>
+                <div>
+                    <p href="">vitavilla</p>
+                </div>
             </div>
             <div>
-                <h2>Instagram</h2>
-                <p>@ernestogomez</p>
+                <div class="logo-container">
+                    <i class="fa-brands fa-instagram fa-bounce"></i>
+                </div>
+                <div>
+                    <p href="">vitavilla</p>
+                </div>
             </div>
         </div>
 
