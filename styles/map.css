@@ -17,13 +17,32 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
     max-width: 500px;
     max-height: 400px;
     overflow: hidden;
     margin: 0; padding: 0;
     border-radius: 10px;
-    
+}
+
+.popup-header .apartment-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.popup-header {
+    padding: 10px;
+    width: 100%;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 0; padding: 0;
+    margin-bottom: 10px;
+}
+.popup-header p,
+.popup-header i {
+    margin: 0; padding: 0;
+    line-height: 0;
 }
 
 .popup-content img {
@@ -42,48 +61,55 @@ span {
     color: gold;
 }
 
-#slideshow-container {
+
+[id^="slideshow-container-"] {
     position: relative;
-    text-align: center;
     width: 100%;
-    height: 300px; /* Set a fixed height for the container */
-    box-sizing: border-box;
-    margin: 0; padding: 0;
-    background-color: white;
+    height: 300px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 10px;
 }
 
-#slideshow-main {
+img[id^="slideshow-main-"] {
     width: 100%;
-    height: 100%; /* Ensure the image fully occupies the container's height */
-    object-fit: cover; /* Maintain the aspect ratio while covering the container */
+    height: 100%;
+    object-fit: cover;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
 }
+
 
 .slideshow-controls {
     position: absolute;
     top: 50%;
-    width: 100%;
+    left: 0;
+    right: 0;
     display: flex;
     justify-content: space-between;
     transform: translateY(-50%);
+    padding: 0 15px;
+    box-sizing: border-box;
 }
 
 .slideshow-controls button {
-    width: 3rem;
-    height: 3rem;
+    width: 40px;
+    height: 40px;
     font-size: 1.5rem;
-    background-color: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.7);
     color: white;
-    border: none; 
+    border: none;
     border-radius: 50%;
-    cursor: pointer; 
-    transition: transform 0.2s ease, background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0 5px;
 }
 
 .slideshow-controls button:hover {
-    background-color: rgba(255, 255, 255, 0.8); 
+    background: rgba(0, 0, 0, 0.9);
     transform: scale(1.1);
 }
 .slideshow-controls button:active {
