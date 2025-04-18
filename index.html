@@ -17,9 +17,10 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <script src="scripts/map.js" defer></script>
     <script src="scripts/chat.js" defer></script>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" defer></script>
+    <script src="scripts/chat_database.js" defer></script>
+    <script src="scripts/script.js" defer></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,9 +34,7 @@
             <a href="#rooms">Rooms</a>
             <a href="#map-section">Location</a>
             <a href="#contact">Contact</a>
-            <a href="login.html"><button class="login">
-                Login or Sign Up
-            </button></a>
+            <a class="login-button-container" href="login.html"></a>
         </nav>
        
     </header>
@@ -248,5 +247,6 @@
         </div>
 
     </section>
+    <script src="scripts/map.js"></script>
 </body>
 </html>
