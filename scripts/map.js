@@ -2,24 +2,24 @@ function changeImage(newSrc) {
     document.getElementById('mainImage').src = newSrc;
 }
 
-const map = L.map('map').setView([14.982806366091523, 120.48461305712443], 50);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+window.onload = function () {
+    const map = L.map('map').setView([14.982806366091523, 120.48461305712443], 50);
 
-const apartmentIcon = L.icon({
-    iconUrl: '/Pictures/location-dot-gold.svg',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-});
-
-const tradeMarkIcon = L.icon({
-    iconUrl: '/Pictures/location-dot.svg',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-});
-
-// Slideshow Manager with separate states
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    const apartmentIcon = L.icon({
+        iconUrl: '/Pictures/location-dot-gold.svg',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+    });
+    
+    const tradeMarkIcon = L.icon({
+        iconUrl: '/Pictures/location-dot.svg',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+    });
+    // Slideshow Manager with separate states
 const slideshowManager = {
     apartment: {
         currentIndex: 0,
@@ -104,3 +104,6 @@ L.marker([14.98174147669493, 120.48330289716195], { icon: tradeMarkIcon })
 setTimeout(() => {
     map.invalidateSize();
 }, 100);
+}
+
+
