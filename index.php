@@ -1,18 +1,23 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Home</title>
     
     
-    <link rel="stylesheet" href="styles/header.css">
-    <link rel="stylesheet" href="styles/index.css">
-    <link rel="stylesheet" href="styles/first.css">
-    <link rel="stylesheet" href="styles/room.css">
-    <link rel="stylesheet" href="styles/map.css">
-    <link rel="stylesheet" href="styles/contact.css">
-    <link rel="stylesheet" href="styles/chat.css">
+    <link rel="stylesheet" href="styles/header.css?v=<?php echo time(); ?>">
+<link rel="stylesheet" href="styles/index.css?v=<?php echo time(); ?>">
+<link rel="stylesheet" href="styles/first.css?v=<?php echo time(); ?>">
+<link rel="stylesheet" href="styles/room.css?v=<?php echo time(); ?>">
+<link rel="stylesheet" href="styles/map.css?v=<?php echo time(); ?>">
+<link rel="stylesheet" href="styles/contact.css?v=<?php echo time(); ?>">
+<link rel="stylesheet" href="styles/chat.css?v=<?php echo time(); ?>">
+
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -20,11 +25,10 @@
     <script src="scripts/chat.js" defer></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" defer></script>
     <script src="scripts/chat_database.js" defer></script>
-    <script src="scripts/script.js" defer></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="header">
@@ -34,9 +38,13 @@
             <a href="#rooms">Rooms</a>
             <a href="#map-section">Location</a>
             <a href="#contact">Contact</a>
-            <a class="login-button-container" href="login.html"></a>
+            <?php if (isset($_SESSION['user'])): ?>
+                <a href="profile.php"><?php echo htmlspecialchars($_SESSION['user']['username']); ?></a>
+                <a href="logout.php">Logout</a>
+            <?php else: ?>
+                <a class="login-or-sign-up" href="login.php">Login or Sign Up</a>
+            <?php endif; ?>
         </nav>
-       
     </header>
 
         <div class="chatbox-container">
@@ -225,7 +233,7 @@
                     </svg>
                 </div>
                 <div>
-                    <p>vitavilla@gmail.com</p>
+                    <p>vitavista@gmail.com</p>
                 </div>
             </div>
             <div>
@@ -233,7 +241,7 @@
                     <i class="fa-brands fa-facebook fa-sm fa-bounce" style="color: #3253e6;"></i>
                 </div>
                 <div>
-                    <p>vitavilla</p>
+                    <p>vitavista</p>
                 </div>
             </div>
             <div>
@@ -247,6 +255,10 @@
         </div>
 
     </section>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="scripts/firebase-config.js"></script>
+    <script src="scripts/header.js"></script>
     <script src="scripts/map.js"></script>
 </body>
 </html>
