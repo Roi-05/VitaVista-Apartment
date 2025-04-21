@@ -87,7 +87,7 @@ L.marker([14.98174147669493, 120.48330289716195], { icon: tradeMarkIcon })
             <div class="popup-header">
                 <p class="apartment-title" style="font-size: 1rem">Philippine State College of Aeronautics Palmayo Campus</p>
                 <p><i class="fa-solid fa-phone" style="color: #049f33;"></i> 09758257308</p>
-                <p><i class="fa-solid fa-location-dot" style="color: gold;"></i> XFJM+J8 Floridablanca, Pampanga</p>
+                <p><i class="fa-solid fa-location-dot" style="color: red;"></i> XFJM+J8 Floridablanca, Pampanga</p>
             </div>
             <div id="slideshow-container-philsca">
                 <img id="slideshow-main-philsca" src="${slideshowManager.philsca.images[0]}" 
