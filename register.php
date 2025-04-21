@@ -1,8 +1,8 @@
 <?php
-include 'backend/db.php';
+require __DIR__ . '/database/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'];
+    $fullname = $_POST['fullname'];
     $email = $_POST['email'];
     $password = $_POST['password'];
     $confirmPassword = $_POST['confirm_password'];
@@ -13,8 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
         try {
-            $stmt = $pdo->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-            $stmt->execute([$username, $email, $hashedPassword]);
+            $stmt = $pdo->prepare("INSERT INTO users (fullname, email, password) VALUES (?, ?, ?)");
+            $stmt->execute([$fullname, $email, $hashedPassword]);
             $success = "Registration successful! You can now log in.";
         } catch (PDOException $e) {
             $error = "Error: " . $e->getMessage();
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p style="color: green; text-align: center;"><?php echo $success; ?></p>
     <?php endif; ?>
     <form method="POST" action="register.php">
-      <input class="text" type="text" name="username" placeholder="Username" required>
+      <input class="text" type="text" name="fullname" placeholder="Full Name" required>
       <input class="email" type="email" name="email" placeholder="Email" required>
       <input class="password" type="password" name="password" placeholder="Password" required>
       <input class="password" type="password" name="confirm_password" placeholder="Confirm Password" required>
