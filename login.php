@@ -1,5 +1,5 @@
 <?php
-include 'backend/db.php';
+require __DIR__ . '/database/db.php';
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
