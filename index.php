@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . '/database/db.php';
 session_start();
 ?>
 
@@ -10,7 +11,7 @@ session_start();
     <title>Home</title>
     
     
-    <link rel="stylesheet" href="styles/header.css?v=<?php echo time(); ?>">
+<link rel="stylesheet" href="styles/header.css?v=<?php echo time(); ?>">
 <link rel="stylesheet" href="styles/index.css?v=<?php echo time(); ?>">
 <link rel="stylesheet" href="styles/first.css?v=<?php echo time(); ?>">
 <link rel="stylesheet" href="styles/room.css?v=<?php echo time(); ?>">
@@ -39,30 +40,35 @@ session_start();
             <a href="#map-section">Location</a>
             <a href="#contact">Contact</a>
             <?php if (isset($_SESSION['user'])): ?>
-                <a href="profile.php"><?php echo htmlspecialchars($_SESSION['user']['username']); ?></a>
-                <a href="logout.php">Logout</a>
+            <div class="profile-container">
+                <img src="Pictures/Default_pfp.jpg" alt="Profile Picture" class="profile-picture">
+                <div class="dropdown-menu">
+                    <a href="profile.html">Profile</a>
+                    <a href="logout.php">Logout</a>
+                </div>
+            </div>
             <?php else: ?>
                 <a class="login-or-sign-up" href="login.php">Login or Sign Up</a>
             <?php endif; ?>
         </nav>
     </header>
 
-        <div class="chatbox-container">
-            <div class="chat-window">
-                <div class="chat-header">
-                    <h3>Chat The Owner</h3>
-                    <button class="close-btn">&times;</button>
-                </div>
-                <div class="chat-body"></div>
-                <div class="chat-input">
-                    <input type="text" placeholder="Type your message...">
-                    <button class="send-btn">Send</button>
-                </div>
+    <div class="chatbox-container">
+        <div class="chat-window">
+            <div class="chat-header">
+                <h3>Chat The Owner</h3>
+                <button class="close-btn">&times;</button>
             </div>
-            <div class="chat-button">
-                <i style="font-size: 2rem;" class="fas fa-comment-dots"></i>
+            <div class="chat-body"></div>
+            <div class="chat-input">
+                <input type="text" placeholder="Type your message...">
+                <button class="send-btn">Send</button>
             </div>
         </div>
+        <div class="chat-button">
+            <i style="font-size: 2rem;" class="fas fa-comment-dots"></i>
+        </div>
+    </div>
 
     <section id="first" class="first">
         <video autoplay muted loop class="background-video">
@@ -255,9 +261,6 @@ session_start();
         </div>
 
     </section>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
-    <script src="scripts/firebase-config.js"></script>
     <script src="scripts/header.js"></script>
     <script src="scripts/map.js"></script>
 </body>

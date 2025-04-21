@@ -16,33 +16,114 @@
     font-size: 2rem;
     color: black;
     text-decoration: none;
+    margin-left: 1rem;
+    display: flex;
+    align-items: center;
 }
 
 .logo span {
     color: gold;
     font-size: 2.5rem;
+    margin-left: 0.2rem; 
 }
 
 .nav-links {
     display: flex;
-    gap: 2rem;
+    gap: 1.5rem;
     align-items: center;
+    margin-right: 1rem;
 }
 
 .nav-links a {
-    color: var(--dark);
+    color: black;
     text-decoration: none;
     font-weight: 500;
-    transition: color 0.3s;
+    font-size: 1rem;
+    transition: color 0.3s ease;
 }
 
 .nav-links a:hover {
     color: gold;
 }
-.login{
+
+.login-or-sign-up:not(.active) {
     border-radius: 10px;
-    padding: 10px 15px;
+    padding: 8px 15px;
     color: white;
-    background-color:  black;
-    
+    background-color: black;
+    font-size: 0.9rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
 }
+
+.login-or-sign-up:hover {
+    color: gold;
+    background-color: #222;
+}
+
+.profile-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.profile-picture {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid gold;
+    margin-left: 1rem;
+}
+
+.profile-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 110%;
+    right: 0;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    min-width: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretfch;
+
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.dropdown-menu a {
+    background-color: transparent;
+    color: #000;
+    border: none;
+    text-align: left;
+    padding: 12px 20px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f2f2f2;
+}
+
+.profile-container.active .dropdown-menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
