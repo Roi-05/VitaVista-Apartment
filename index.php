@@ -72,7 +72,7 @@ session_start();
 
     <section id="first" class="first">
         <video autoplay muted loop class="background-video">
-            <source src="Pictures/asdad.mp4" type="video/mp4">
+            <source src="Pictures/demo.mp4" type="video/mp4">
             Your browser does not support the video tag.
         </video>
         <div class="first-content">
@@ -89,11 +89,8 @@ session_start();
         </div>
         <div class="rooms-grid">
             <div class="room-card">
-                <div class="room-image">
-                    <img src="Pictures/jay.jpg" alt="Penthouse Suite">
-                </div>
                 <div class="room-details">
-                    <h3>Room</h3>
+                    <h3>Apartment 1</h3>
                     <ul class="room-features">
                         <li>🛏️ 3 Bedrooms</li>
                         <li>🛁 3.5 Bathrooms</li>
@@ -104,11 +101,8 @@ session_start();
                 </div>
             </div>
             <div class="room-card">
-                <div class="room-image">
-                    <img src="Pictures/jay.jpg" alt="Penthouse Suite">
-                </div>
                 <div class="room-details">
-                    <h3>Penthouse Suite</h3>
+                    <h3>Apartment 2</h3>
                     <ul class="room-features">
                         <li>🛏️ 3 Bedrooms</li>
                         <li>🛁 3.5 Bathrooms</li>
@@ -119,11 +113,8 @@ session_start();
                 </div>
             </div>
             <div class="room-card">
-                <div class="room-image">
-                    <img src="Pictures/jay.jpg" alt="Penthouse Suite">
-                </div>
                 <div class="room-details">
-                    <h3>Penthouse Suite</h3>
+                    <h3>Apartment 3</h3>
                     <ul class="room-features">
                         <li>🛏️ 3 Bedrooms</li>
                         <li>🛁 3.5 Bathrooms</li>
@@ -134,11 +125,8 @@ session_start();
                 </div>
             </div>
             <div class="room-card">
-                <div class="room-image">
-                    <img src="Pictures/jay.jpg" alt="Penthouse Suite">
-                </div>
                 <div class="room-details">
-                    <h3>Penthouse Suite</h3>
+                    <h3>Apartment 4</h3>
                     <ul class="room-features">
                         <li>🛏️ 3 Bedrooms</li>
                         <li>🛁 3.5 Bathrooms</li>
@@ -148,68 +136,7 @@ session_start();
                     <a href="Rooms/room4.html"><button class="view-more">View More</button></a>
                 </div>
             </div>
-            <div class="room-card">
-                <div class="room-image">
-                    <img src="Pictures/jay.jpg" alt="Penthouse Suite">
-                </div>
-                <div class="room-details">
-                    <h3>Penthouse Suite</h3>
-                    <ul class="room-features">
-                        <li>🛏️ 3 Bedrooms</li>
-                        <li>🛁 3.5 Bathrooms</li>
-                        <li>📏 220 m²</li>
-                        <li>🌆 City View</li>
-                    </ul>
-                    <a href="Rooms/room1.html"><button class="view-more">View More</button></a>
-                </div>
-            </div>
-            <div class="room-card">
-                <div class="room-image">
-                    <img src="Pictures/jay.jpg" alt="Penthouse Suite">
-                </div>
-                <div class="room-details">
-                    <h3>Penthouse Suite</h3>
-                    <ul class="room-features">
-                        <li>🛏️ 3 Bedrooms</li>
-                        <li>🛁 3.5 Bathrooms</li>
-                        <li>📏 220 m²</li>
-                        <li>🌆 City View</li>
-                    </ul>
-                    <a href="Rooms/room2.html"><button class="view-more">View More</button></a>
-                </div>
-            </div>
-            <div class="room-card">
-                <div class="room-image">
-                    <img src="Pictures/jay.jpg" alt="Penthouse Suite">
-                </div>
-                <div class="room-details">
-                    <h3>Penthouse Suite</h3>
-                    <ul class="room-features">
-                        <li>🛏️ 3 Bedrooms</li>
-                        <li>🛁 3.5 Bathrooms</li>
-                        <li>📏 220 m²</li>
-                        <li>🌆 City View</li>
-                    </ul>
-                    <a href="Rooms/room3.html"><button class="view-more">View More</button></a>
-                </div>
-            </div>
-            <div class="room-card">
-                <div class="room-image">
-                    <img src="Pictures/jay.jpg" alt="Penthouse Suite">
-                </div>
-                <div class="room-details">
-                    <h3>Penthouse Suite</h3>
-                    <ul class="room-features">
-                        <li>🛏️ 3 Bedrooms</li>
-                        <li>🛁 3.5 Bathrooms</li>
-                        <li>📏 220 m²</li>
-                        <li>🌆 City View</li>
-                    </ul>
-                    <a href="Rooms/room4.html"><button class="view-more">View More</button></a>
-                </div>
-            </div>
-            <!-- Add more room cards -->
-        </div>
+    </section>
 
     <section id="map-section">
         <div class="section-title">
