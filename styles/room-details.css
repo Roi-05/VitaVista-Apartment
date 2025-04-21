@@ -1,18 +1,29 @@
 body {
     padding-top: 100px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    background-color: #d8d6d6;
 }
-
-.image-slideshow {
+.room-details-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60vw;
     height: 80vh;
-    width: 70vw;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+}
+.image-slideshow {
+    height: 100%;
+    width: 50%;
 }
 
 #slideshow-main {
     height: 100%; width: 100%;
-    border: 30px ridge rgb(180, 154, 10);
+    object-fit: cover;
     box-sizing: border-box;
 }
 
@@ -20,15 +31,15 @@ body {
     position: relative;
     text-align: center;
     width: 100%;
-    height: 100%; /* Set a fixed height for the container */
+    height: 100%;
     box-sizing: border-box;
 }
 
 .slideshow-controls {
     position: absolute;
-    padding-left: 42px;
+    padding-left: 32px;
     top: 50%;
-    width: 92%;
+    width: 86%;
     display: flex;
     justify-content: space-between;
     transform: translateY(-50%);
@@ -47,8 +58,8 @@ body {
 }
 
 .slideshow-controls button:hover {
-    background-color: rgba(255, 255, 255, 0.8); 
-    transform: scale(1.1);
+    background-color: rgba(85, 84, 84, 0.5); 
+    transform: scale(1.25);
 }
 .slideshow-controls button:active {
     transform: scale(0.95);
@@ -56,12 +67,24 @@ body {
 }
 
 .room-details {
-    width: 25vw;
-    height: 80vh;
+    width: 50%;
+    height: 100%;
     padding-left: 20px;
     padding-right: 20px;
     overflow-y: auto;
     background-color: white;
+}
+
+.room-features {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.room-features div {
+    margin: 0;
+    height: 200px;
+    background-color: rgb(239, 237, 237);
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
 }

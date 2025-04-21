@@ -18,8 +18,9 @@ session_start();
 <link rel="stylesheet" href="styles/map.css?v=<?php echo time(); ?>">
 <link rel="stylesheet" href="styles/contact.css?v=<?php echo time(); ?>">
 <link rel="stylesheet" href="styles/chat.css?v=<?php echo time(); ?>">
-
-
+<link rel="stylesheet" href="styles/about.css?v=<?php echo time(); ?>">
+    
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -33,7 +34,7 @@ session_start();
 </head>
 <body>
     <header class="header">
-        <a href="#" class="logo">Vita<span>Vista</span></a>
+        <a href="#" class="logo"><span>RK</span>Apartment</a>
         <nav class="nav-links">
             <a href="#first">Home</a>
             <a href="#rooms">Rooms</a>
@@ -43,7 +44,7 @@ session_start();
             <div class="profile-container">
                 <img src="Pictures/Default_pfp.jpg" alt="Profile Picture" class="profile-picture">
                 <div class="dropdown-menu">
-                    <a href="profile.html">Profile</a>
+                    <a href="profile.php">Profile</a>
                     <a href="logout.php">Logout</a>
                 </div>
             </div>
@@ -82,56 +83,78 @@ session_start();
         </div>
     </section>
 
+    <section id="about" class="about">
+    <div class="section-title">
+        <h2>About Us</h2>
+        <p>Discover the essence of luxury living</p>
+    </div>
+    <div class="about-content">
+        <p>Welcome to our luxury apartment residences, where elegance meets comfort. Our apartments are designed with the finest materials and modern amenities to provide you with an unparalleled living experience. Enjoy breathtaking views, spacious layouts, and a vibrant community that caters to your every need.</p>
+    </div>
+
+    <div class="history">
+        <h3>Our History</h3>
+        <p>Established in 2020, VitaVista Apartments was built on a vision to provide a luxurious yet affordable living experience. The land, once a serene countryside, has been transformed into a modern residential haven while preserving its natural beauty. Over the years, we have grown into a vibrant community that values comfort, security, and sustainability.</p>
+    </div>
+
+    <div class="location">
+        <h3>Location</h3>
+        <p>VitaVista Apartments is strategically located in the heart of Pampanga, offering easy access to major highways, shopping centers, schools, and hospitals. Nestled in a peaceful neighborhood, our location provides the perfect balance of urban convenience and tranquil living.</p>
+    </div>
+
+    <div class="lot-details">
+        <h3>Details of the Lot and Land</h3>
+        <ul>
+            <li><strong>Total Area:</strong> 10,000 square meters</li>
+            <li><strong>Land Type:</strong> Residential</li>
+            <li><strong>Features:</strong> Landscaped gardens, walking paths, and recreational areas</li>
+            <li><strong>Nearby Landmarks:</strong> Don Honorio Ventura State University, SM Pampanga, and Clark International Airport</li>
+        </ul>
+    </div>
+</section>
+
     <section id="rooms" class="rooms">
         <div class="section-title">
             <h2>Our Residences</h2>
             <p>Select from our exclusive collection</p>
         </div>
         <div class="rooms-grid">
-            <div class="room-card">
+            <div class="room-card" data-aos="fade-up">
                 <div class="room-details">
                     <h3>Apartment 1</h3>
                     <ul class="room-features">
-                        <li>🛏️ 3 Bedrooms</li>
-                        <li>🛁 3.5 Bathrooms</li>
-                        <li>📏 220 m²</li>
-                        <li>🌆 City View</li>
+                        <li>🛏️ 2 Rooms</li>
+                        <li>🛁 1 Bathroom</li>
                     </ul>
                     <a href="Rooms/room1.html"><button class="view-more">View More</button></a>
                 </div>
             </div>
-            <div class="room-card">
+            <div class="room-card" data-aos="fade-up">
                 <div class="room-details">
                     <h3>Apartment 2</h3>
                     <ul class="room-features">
-                        <li>🛏️ 3 Bedrooms</li>
-                        <li>🛁 3.5 Bathrooms</li>
-                        <li>📏 220 m²</li>
-                        <li>🌆 City View</li>
+                        <li>🛏️ 2 Rooms</li>
+                        <li>🛁 1 Bathroom</li>
                     </ul>                
                     <a href="Rooms/room2.html"><button class="view-more">View More</button></a>
                 </div>
             </div>
-            <div class="room-card">
+            <div class="room-card" data-aos="fade-up">
                 <div class="room-details">
                     <h3>Apartment 3</h3>
                     <ul class="room-features">
-                        <li>🛏️ 3 Bedrooms</li>
-                        <li>🛁 3.5 Bathrooms</li>
-                        <li>📏 220 m²</li>
-                        <li>🌆 City View</li>
+                        <li>🛏️ 2 Rooms</li>
+                        <li>🛁 1 Bathroom</li>
                     </ul>
                     <a href="Rooms/room3.html"><button class="view-more">View More</button></a>
                 </div>
             </div>
-            <div class="room-card">
+            <div class="room-card" data-aos="fade-up">
                 <div class="room-details">
                     <h3>Apartment 4</h3>
                     <ul class="room-features">
-                        <li>🛏️ 3 Bedrooms</li>
-                        <li>🛁 3.5 Bathrooms</li>
-                        <li>📏 220 m²</li>
-                        <li>🌆 City View</li>
+                        <li>🛏️ 2 Rooms</li>
+                        <li>🛁 1 Bathroom</li>
                     </ul>
                     <a href="Rooms/room4.html"><button class="view-more">View More</button></a>
                 </div>
@@ -140,12 +163,12 @@ session_start();
 
     <section id="map-section">
         <div class="section-title">
-            <h2>Prime Location</h2>
+            <h2>Vicinity Map</h2>
         </div>
         <div id="map"></div>
     </section>
 
-    <section id="contact" class="contact">
+    <section id="contact" class="contact" data-aos="fade-up">
         <div class="info">
             <p class="connect-with-us">Connect with us!</p>
             <p style="color: white;">We'd love to hear from you.</p>
@@ -189,6 +212,14 @@ session_start();
 
     </section>
     <script src="scripts/header.js"></script>
-    <script src="scripts/map.js"></script>
+    <script src="scripts/map.js?v=<?php echo time(); ?>"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+        AOS.init({
+            duration: 1000, // Animation duration in milliseconds    // Whether animation should happen only once
+        });
+        });
+    </script>
 </body>
 </html>

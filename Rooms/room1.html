@@ -10,56 +10,45 @@
 </head>
 <body>
     <header class="header">
-        <a href="#" class="logo">Vita<span>Vista</span></a>
+        <a href="/index.php#rooms" class="logo"><span>RK</span>Apartment</a>
         <nav class="nav-links">
-            <a href="/index.html">Home</a>
-            <a href="#rooms">Rooms</a>
-            <a href="#map-section">Location</a>
-            <a href="#contact">Contact</a>
-            <a href="login.html"><button class="login">
-                Login or Sign Up
-            </button></a>
+            <a href="/index.php">Home</a>
         </nav>
     </header>
 
-    <div class="image-slideshow">
-        <div id="slideshow-container">
-            <img id="slideshow-main" src="../Pictures/room1.jpg" alt="Room Image">
-            <div class="slideshow-controls">
-                <button onclick="prevImage()">&#10094;</button>
-                <button onclick="nextImage()">&#10095;</button>
+
+    <div class="room-details-container">
+        <div class="image-slideshow">
+            <div id="slideshow-container">
+                <img id="slideshow-main" src="../Pictures/living_room.jpeg" alt="Room Image">
+                <div class="slideshow-controls">
+                    <button onclick="prevImage()">&#10094;</button>
+                    <button onclick="nextImage()">&#10095;</button>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="room-details">
-        <h1>Details</h1>
-        <h3>Room 1</h3>
-        <ul class="room-features">
-            <li>🛏️ 3 Bedrooms</li>
-            <li>🛁 3.5 Bathrooms</li>
-            <li>📏 220 m²</li>
-            <li>🌆 City View</li>
-            <li>🛏️ 3 Bedrooms</li>
-            <li>🛁 3.5 Bathrooms</li>
-            <li>📏 220 m²</li>
-            <li>🌆 City View</li>
-            <li>🛏️ 3 Bedrooms</li>
-            <li>🛁 3.5 Bathrooms</li>
-            <li>📏 220 m²</li>
-            <li>🌆 City View</li>
-            <li>🛏️ 3 Bedrooms</li>
-            <li>🛁 3.5 Bathrooms</li>
-            <li>📏 220 m²</li>
-            <li>🌆 City View</li>
-        </ul>
+        <div class="room-details">
+            <h1>Details</h1>
+            <h3>Apartment 1</h3>
+                <div class="room-features">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+        </div>
     </div>
 
     <script>
         let currentImageIndex = 0;
         const images = [
-            "../Pictures/room2.jpg",
-            "../Pictures/room3.jpg",
-            "../Pictures/room4.jpg"
+            "../Pictures/living_room.jpeg",
+            "../Pictures/kitchen.jpeg",
+            "../Pictures/kitchen_sink.jpeg",
+            "../Pictures/room.jpeg",
+            "../Pictures/room_2.jpeg",
+            "../Pictures/bathroom.jpeg",
+            "../Pictures/bathroom_1.jpeg"
         ];
 
         function updateSlideshow() {

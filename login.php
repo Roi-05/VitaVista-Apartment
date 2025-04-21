@@ -13,8 +13,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user'] = $user;
-            header("Location: index.php");
-            exit;
+            echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const successPopup = document.getElementById('success-popup');
+                    successPopup.style.display = 'block';
+                    setTimeout(() => {
+                        window.location.href = 'index.php';
+                    }, 2000);
+                });
+            </script>";
         } else {
             $error = "Invalid email or password.";
         }
@@ -31,8 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VitaVista Login</title>
   <link rel="stylesheet" href="styles/login.css?v=<?php echo time(); ?>" />
+  
 </head>
 <body>
+  <div id="success-popup">Login Successful! Redirecting...</div>
+
   <div class="login-container">
     <h1>VitaVista</h1>
     <?php if (isset($error)): ?>
