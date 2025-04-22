@@ -37,6 +37,7 @@ session_start();
         <a href="#" class="logo"><span>RK</span>Apartment</a>
         <nav class="nav-links">
             <a href="#first">Home</a>
+            <a href="#about">About</a>
             <a href="#rooms">Rooms</a>
             <a href="#map-section">Location</a>
             <a href="#contact">Contact</a>
@@ -82,36 +83,6 @@ session_start();
             <button class="bookbutton">Book Now</button>
         </div>
     </section>
-
-    <section id="about" class="about">
-    <div class="section-title">
-        <h2>About Us</h2>
-        <p>Discover the essence of luxury living</p>
-    </div>
-    <div class="about-content">
-        <p>Welcome to our luxury apartment residences, where elegance meets comfort. Our apartments are designed with the finest materials and modern amenities to provide you with an unparalleled living experience. Enjoy breathtaking views, spacious layouts, and a vibrant community that caters to your every need.</p>
-    </div>
-
-    <div class="history">
-        <h3>Our History</h3>
-        <p>Established in 2020, VitaVista Apartments was built on a vision to provide a luxurious yet affordable living experience. The land, once a serene countryside, has been transformed into a modern residential haven while preserving its natural beauty. Over the years, we have grown into a vibrant community that values comfort, security, and sustainability.</p>
-    </div>
-
-    <div class="location">
-        <h3>Location</h3>
-        <p>VitaVista Apartments is strategically located in the heart of Pampanga, offering easy access to major highways, shopping centers, schools, and hospitals. Nestled in a peaceful neighborhood, our location provides the perfect balance of urban convenience and tranquil living.</p>
-    </div>
-
-    <div class="lot-details">
-        <h3>Details of the Lot and Land</h3>
-        <ul>
-            <li><strong>Total Area:</strong> 10,000 square meters</li>
-            <li><strong>Land Type:</strong> Residential</li>
-            <li><strong>Features:</strong> Landscaped gardens, walking paths, and recreational areas</li>
-            <li><strong>Nearby Landmarks:</strong> Don Honorio Ventura State University, SM Pampanga, and Clark International Airport</li>
-        </ul>
-    </div>
-</section>
 
     <section id="rooms" class="rooms">
         <div class="section-title">
