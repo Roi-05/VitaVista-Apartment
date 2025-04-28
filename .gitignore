@@ -1,0 +1,2 @@
+# Ignore sensitive files
+database/db.php

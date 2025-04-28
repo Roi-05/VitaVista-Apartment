@@ -4,17 +4,19 @@
     align-items: center;
     justify-content: center;
     text-align: center;
+    color: gold;
 }
 
 .first-content h1 {
     font-size: 4rem;
     margin-bottom: 1rem;
-    font-family: Roboto, Arial;
+    font-family: 'Playfair Display', serif;
 }
 
 .first-content p {
     font-size: 1.5rem;
     margin-bottom: 2rem;
+    font-family: 'Cormorant Garamond', serif;
 }
 
 .background-video {
@@ -25,20 +27,22 @@
     height: 100%;
     object-fit: cover;
     z-index: -1;
+    
 }
 
 .bookbutton {
-    background-color: #000;
-    color: #fff;
+    background-color:rgba(0, 17, 102, .7);
+    color: gold;
     padding: 10px 20px;
     border: none;
     border-radius: 20px;
     font-size: 1rem;
     font-family: Roboto, Arial, sans-serif;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: 0.3s ease;
 }
 
 .bookbutton:hover {
-    background-color: #333;
+    background-color: gold ;
+    color: #001166;
 }

@@ -41,6 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   
 </head>
 <body>
+
+
   <div id="success-popup">Login Successful! Redirecting...</div>
 
   <div class="login-container">

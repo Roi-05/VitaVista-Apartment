@@ -1,0 +1,267 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+require __DIR__ . '/database/db.php';
+session_start();
+$pricePerNight = 12000; // Set the price for the specific apartment
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1 Bedroom Apartment</title>
+  <link rel="stylesheet" href="styles/header.css?v=<?php echo time(); ?>">
+  <link rel="stylesheet" href="styles/room-details.css?v=<?php echo time(); ?>">
+  <link rel="stylesheet" href="styles/room_map.css?v=<?php echo time(); ?>">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+</head>
+<body data-user-signed-in="<?php echo isset($_SESSION['user']) ? 'true' : 'false'; ?>">
+    <header class="header">
+        <div class="logo-container">
+            <a href="index.php"><img src="Pictures/logo-apt.png" alt="VitaVista Logo" class="logo-image"></a>
+            <a href="index.php" class="logo">Vita<span>Vista</span></a>
+        </div>
+        <nav class="nav-links">
+            <?php if (isset($_SESSION['user'])): ?>
+            <div class="profile-container">
+                <img src="Pictures/Default_pfp.jpg" alt="Profile Picture" class="profile-picture">
+                <div class="dropdown-menu">
+                    <a href="profile.php">Profile</a>
+                    <a href="logout.php">Logout</a>
+                </div>
+            </div>
+            <?php else: ?>
+                <a class="login-or-sign-up" href="login.php">Login or Sign Up</a>
+            <?php endif; ?>
+        </nav>
+    </header>
+
+  <!-- Mosaic Grid -->
+  <div class="image-mosaic custom-grid">
+    <div class="mosaic-large" onclick="openLightbox(0)">
+        <img src="/Pictures/1_bedroom/1.png" alt="Living Room">
+        <div class="view-more-overlay">Full View</div>
+    </div>
+    <div class="mosaic-small mosaic-small-top" onclick="openLightbox(1)">
+        <img src="/Pictures/1_bedroom/2.png" alt="Kitchen">
+        <div class="view-more-overlay">Full View</div>
+    </div>
+    <div class="mosaic-small mosaic-small-bottom" onclick="openLightbox(2)">
+        <img src="/Pictures/1_bedroom/3.png" alt="Kitchen Sink">
+        <div class="view-more-overlay">Full View</div>
+    </div>
+</div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox">
+    <div class="lightbox-controls">
+        <button class="lightbox-btn left" onclick="changeSlide(-1)">&#10094;</button>
+        <button class="lightbox-btn right" onclick="changeSlide(1)">&#10095;</button>
+    </div>
+    <div class="lightbox-content">
+      <img id="lightbox-img" class="lightbox-img" src="" alt="Slideshow Image">
+      <button class="close-btn" onclick="closeLightbox()">×</button>
+    </div>
+  </div>
+
+  <!-- Sticky Nav -->
+  <div class="sticky-header">
+    <a href="#overview">Overview</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#details">Details</a>
+  </div>
+
+<div class="room-details-container">
+  <!-- Overview Section -->
+  <section id="overview">
+    <h2>Overview</h2>
+    <ul>
+      <li>🛏️ 1 Bedroom Apartment</li>
+      <li>🛁 1 Bathroom</li>
+      <li>📐 Approximately 40 sqm (estimated typical size)</li>
+      <li>🪑 Fully Furnished</li>
+      <li>🌐 Free WiFi Access</li>
+    </ul>
+  </section>
+
+  <!-- Pricing Section -->
+  <section id="pricing">
+    <h2>Pricing</h2>
+    <p><strong>Rental Offer:</strong> Php 35,000/monthly</p>
+    <p><strong>Payment Terms:</strong> 1 Month Advance + 2 Months Security Deposit</p>
+    <p><strong>Contract Term:</strong> Preferred 1-Year Contract (Shorter Terms Possible Upon Request)</p>
+  </section>
+
+  <!-- Details Section -->
+  <section id="details">
+    <h2>Details</h2>
+    <ul>
+      <li>🛋️ Fully Furnished Living Space</li>
+      <li>🍳 Kitchen with Basic Appliances</li>
+      <li>🛁 Private Bathroom</li>
+      <li>🌐 High-Speed WiFi Included</li>
+    </ul>
+
+    <h3>Amenities</h3>
+    <ul>
+    <li>📶 Shared Common WiFi</li>
+    <li>🔒 CCTV Security</li>
+    </ul>
+
+    <h3>Furnitures & Appliances Included</h3>
+    <ul>
+      <li>🛏️ Bedframe and Mattress</li>
+      <li>🛋️ Sofa Set</li>
+      <li>🍽️ Dining Table and Chairs</li>
+      <li>🥶 Refrigerator</li>
+      <li>🍳 Stove and Microwave</li>
+      <li>🪟 Curtains Installed</li>
+      <li>🚿 Water Heater (if applicable)</li>
+    </ul>
+  </section>
+</div>
+
+<div class="booking-section" data-price-per-night="12000">
+  <p class="price">₱<span id="total-price">0</span> <span>for <span id="total-nights">0</span> nights</span></p>
+  <div class="booking-dates">
+    <div class="date">
+      <label for="check-in">CHECK-IN</label>
+      <input type="date" id="check-in">
+    </div>
+    <div class="date">
+      <label for="check-out">CHECKOUT</label>
+      <input type="date" id="check-out">
+    </div>
+  </div>
+  <div class="bookrooms">
+    <label for="bookrooms">Rooms</label>
+    <select id="bookrooms">
+      <option value="1">Room 1</option>
+      <option value="2">Room 2</option>
+      <option value="3">Room 3</option>
+      <option value="4">Room 4</option>
+    </select>
+  </div>
+  <button class="book-button">Book Now</button>
+  <p class="note">You won't be charged yet</p>
+</div>
+
+<div id="popup-modal" class="modal">
+  <div class="modal-content">
+    <span id="close-modal" class="close-button">&times;</span>
+    <p id="modal-message"></p>
+  </div>
+</div>
+
+<div id="payment-modal" class="modal">
+  <div class="modal-content">
+    <span id="close-payment-modal" class="close-button">&times;</span>
+    <h3>Payment Method</h3>
+    <form id="payment-form">
+      <label for="payment-method">Choose a payment method:</label>
+      <select id="payment-method" required>
+        <option value="credit-card">Credit Card</option>
+        <option value="paypal">PayPal</option>
+        <option value="bank-transfer">Bank Transfer</option>
+      </select>
+      <button type="submit" class="payment-button">Proceed to Pay</button>
+    </form>
+  </div>
+</div>
+
+
+  <!-- JavaScript -->
+  <script>
+    const images = [
+      "/Pictures/1_bedroom/1.png",
+      "/Pictures/1_bedroom/2.png",
+      "/Pictures/1_bedroom/3.png",
+      "/Pictures/1_bedroom/4.png",
+      "/Pictures/1_bedroom/5.png",
+      "/Pictures/1_bedroom/6.png",
+      "/Pictures/1_bedroom/7.png",
+      "/Pictures/1_bedroom/8.png",
+      "/Pictures/1_bedroom/9.png",
+      "/Pictures/1_bedroom/10.png"
+    ];
+
+    let currentIndex = 0;
+    const stickyHeader = document.querySelector('.sticky-header');
+    function openLightbox(index = 0) {
+      const lightbox = document.getElementById('lightbox');
+      const img = document.getElementById('lightbox-img');
+      img.src = images[index];
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      currentIndex = index;
+      stickyHeader.style.display = 'none'; // Hide sticky header
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+      document.body.style.overflow = 'auto';
+      stickyHeader.style.display = 'flex';
+    }
+
+    function changeSlide(offset) {
+      currentIndex = (currentIndex + offset + images.length) % images.length;
+      document.getElementById('lightbox-img').src = images[currentIndex];
+    }
+
+    // Trigger from mosaic or view more
+    document.querySelector('.mosaic-small-top').addEventListener('click', () => openLightbox(0));
+
+    // Optional: click small-bottom to also view
+    document.querySelector('.mosaic-small-bottom').addEventListener('click', () => openLightbox(2));
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (document.getElementById('lightbox').classList.contains('active')) {
+        if (e.key === 'ArrowLeft') changeSlide(-1);
+        if (e.key === 'ArrowRight') changeSlide(1);
+        if (e.key === 'Escape') closeLightbox();
+      }
+    });
+
+    // Touch swipe support
+    let touchStartX = 0;
+    document.addEventListener('touchstart', e => {
+      touchStartX = e.touches[0].clientX;
+    });
+
+    document.addEventListener('touchend', e => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1);
+    });
+
+    // Leaflet map
+    const map = L.map('map').setView([14.9828, 120.4846], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    L.marker([14.9828, 120.4846])
+      .addTo(map)
+      .bindPopup(`
+        <div class="popup-content">
+          <div class="popup-header">
+            <p class="apartment-title" style="font-size: 1rem">Mel's Mansion</p>
+            <p><i class="fa-solid fa-phone" style="color: #049f33;"></i> 09758257308</p>
+            <p><i class="fa-solid fa-location-dot" style="color: red;"></i> Pias, Porac, Pampanga</p>
+          </div>
+        </div>`);
+    setTimeout(() => { map.invalidateSize(); }, 300);
+  </script>
+    <script>
+        (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="Hd_72aiMggC-PmJBKHMNU";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+    </script>
+    <script>
+  const pricePerNight = 12000; // Price specific to this apartment
+</script>
+<script src="scripts/booking.js"></script>
+</body>
+</html>

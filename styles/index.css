@@ -1,5 +1,5 @@
 * {
-    font-family: Roboto, Arial;
+    font-family: Roboto , Arial;
 }
 
 body {
@@ -12,3 +12,19 @@ button:hover {
     cursor: pointer;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
+footer {
+    background-color: #ffffff;
+    color: white;
+    height: 60px;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    color: black;
+}

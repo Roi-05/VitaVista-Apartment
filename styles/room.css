@@ -11,6 +11,7 @@
     margin-bottom: 40px;
 }
 
+
 .section-title h2 {
     font-size: 2.5rem;
     margin-bottom: 1rem;
@@ -19,7 +20,7 @@
 
 .section-title p {
     font-size: 1.1rem;
-    color: #666;
+    color: #faf3f3;
     max-width: 600px;
     margin: 0 auto;
 }
@@ -37,11 +38,10 @@
     position: relative;
     border-radius: 12px;
     overflow: hidden;
-    min-height: 500px;
+    min-height: 400px;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
-    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%),
-                url("/Pictures/main_apt.jpeg") no-repeat center center/cover;
 }
+
 
 .room-card:hover {
     transform: translateY(-5px);
@@ -74,7 +74,7 @@
     z-index: 2;
     transform: translateY(20%);
     opacity: 0;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .room-card:hover .room-details {
@@ -165,4 +165,24 @@
         width: 100%;
         justify-content: center;
     }
+}
+
+.room-card:first-child {
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%),
+                url("/Pictures/studiotype/1.avif") no-repeat center center/cover;
+}
+
+.room-card:nth-child(2) {
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%),
+                url("/Pictures/1_bedroom/1.png") no-repeat center center/cover;
+}
+
+.room-card:nth-child(3) {
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%),
+                url("/Pictures/2_bedroom/9.png") no-repeat center center/cover;
+}
+
+.room-card:nth-child(4) {
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%),
+                url("/Pictures/penthouse/1.avif") no-repeat center center/cover;
 }
