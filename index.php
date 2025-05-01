@@ -50,7 +50,7 @@ session_start();
             <div class="profile-container">
                 <img src="Pictures/Default_pfp.jpg" alt="Profile Picture" class="profile-picture">
                 <div class="dropdown-menu">
-                    <a href="profile.php">Profile</a>
+                    <a href="profile_dashboard.php">Profile</a>
                     <a href="logout.php">Logout</a>
                 </div>
             </div>

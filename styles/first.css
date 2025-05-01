@@ -43,6 +43,6 @@
 }
 
 .bookbutton:hover {
-    background-color: gold ;
+    background-color: rgba(255, 215, 0, .7) ;
     color: #001166;
 }
