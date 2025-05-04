@@ -47,7 +47,7 @@ $user = $_SESSION['user'];
 
 <body>
 
-<header class="header">
+    <header class="header">
         <div class="logo-container">
             <a href="index.php"><img src="Pictures/logo-apt.png" alt="VitaVista Logo" class="logo-image"></a>
             <a href="index.php" class="logo">Vita<span>Vista</span></a>

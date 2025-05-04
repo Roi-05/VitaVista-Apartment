@@ -33,6 +33,7 @@ $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 </head>
 <body>
+
   <div class="sidebar">
     <div class="sidebar-header">
       <h2>User Dashboard</h2>
@@ -65,27 +66,27 @@ $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
       </div>
     </div>
 
-  <div id="bookings" class="content-section">
-    <div class="card">
-      <h2>Your Bookings</h2>
-      <?php
-      if (empty($bookings)) {
-          echo "<p>No bookings found.</p>";
-      }  else {
-        foreach ($bookings as $booking) {
-          echo "<ul class='booking-list'>";
-          echo "<li>Apartment: {$booking['apartment_type']} ({$booking['unit']})</li>";
-          echo "<li>Check-in: " . date('F j, Y', strtotime($booking['check_in_date'])) . "</li>";
-          echo "<li>Check-out: " . date('F j, Y', strtotime($booking['check_out_date'])) . "</li>";
-          echo "<li>Total Price: ₱" . number_format($booking['total_price'], 2) . "</li>";
-          echo "<li>Booked On: " . date('F j, Y g:i A', strtotime($booking['created_at'])) . "</li>";
-          echo "<li><button>Cancel Booking</button></li>";
-          echo "</ul>";
+    <div id="bookings" class="content-section">
+      <div class="card">
+        <h2>Your Bookings</h2>
+        <?php
+        if (empty($bookings)) {
+            echo "<p>No bookings found.</p>";
+        }  else {
+          foreach ($bookings as $booking) {
+            echo "<ul class='booking-list'>";
+            echo "<li>Apartment: {$booking['apartment_type']} ({$booking['unit']})</li>";
+            echo "<li>Check-in: " . date('F j, Y', strtotime($booking['check_in_date'])) . "</li>";
+            echo "<li>Check-out: " . date('F j, Y', strtotime($booking['check_out_date'])) . "</li>";
+            echo "<li>Total Price: ₱" . number_format($booking['total_price'], 2) . "</li>";
+            echo "<li>Booked On: " . date('F j, Y g:i A', strtotime($booking['created_at'])) . "</li>";
+            echo "<li><button>Cancel Booking</button></li>";
+            echo "</ul>";
+          }
         }
-      }
-      ?>
+        ?>
+      </div>
     </div>
-  </div>
 
 
     <div id="settings" class="content-section">

@@ -18,7 +18,7 @@ session_start();
     <link rel="stylesheet" href="styles/contact.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/chat.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/about.css?v=<?php echo time(); ?>">
-        
+   
     <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -26,6 +26,7 @@ session_start();
     <script src="scripts/chat.js" defer></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" defer></script>
     <script src="scripts/chat_database.js" defer></script>
+   
 
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&display=swap" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,7 +41,7 @@ session_start();
             
         </div>
         <div style="color: white; font-size: 2rem;">
-        MEL tapalodo        </div>
+        MEL tapalodo JAYVEE pogi       </div>
         <nav class="nav-links">
             <a href="#first">Home</a>
             <a href="#about">About</a>
