@@ -110,10 +110,10 @@ $existingBookings = $bookingsQuery->fetchAll(PDO::FETCH_ASSOC);
   </div>
 
   <!-- Sticky Nav -->
-  <div class="sticky-header">
+  <div class="sticky-header" id="sticky-header">
     <a href="#overview">Overview</a>
-    <a href="#pricing">Pricing</a>
-    <a href="#details">Details</a>
+    <a href="#overview">Pricing</a>
+    <a href="#pricing">Details</a>
   </div>
 
 <div class="room-details-container">
@@ -205,6 +205,7 @@ $existingBookings = $bookingsQuery->fetchAll(PDO::FETCH_ASSOC);
 
 <div id="payment-modal" class="modal">
   <div class="modal-content">
+  <img src="Pictures//studiotype/1.avif" alt="Apt">
     <span id="close-payment-modal" class="close-button">&times;</span>
     <h3>Booking Confirmation</h3>
     <div class="booking-summary">

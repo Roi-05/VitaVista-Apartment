@@ -10,9 +10,8 @@ session_start();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vita Vista</title>
     
-        
+    <link rel="stylesheet" href="styles/index.css?v=<?php echo time(); ?>">       
     <link rel="stylesheet" href="styles/header.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="styles/index.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/first.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/room.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/map.css?v=<?php echo time(); ?>">
@@ -40,6 +39,8 @@ session_start();
             <a href="#" class="logo">Vita<span>Vista</span></a>
             
         </div>
+        <div style="color: white; font-size: 2rem;">
+        MEL tapalodo        </div>
         <nav class="nav-links">
             <a href="#first">Home</a>
             <a href="#about">About</a>

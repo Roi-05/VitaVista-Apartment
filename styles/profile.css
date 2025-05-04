@@ -230,3 +230,12 @@ button:hover {
 .close:focus {
     color: #fff;
 }
+
+.booking-list {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 10px;
+  border-left: 4px solid #007bff;
+  list-style-type: none;
+  margin-top: 20px;
+}

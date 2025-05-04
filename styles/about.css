@@ -1,5 +1,6 @@
 /* About Section */
 .about {
+    box-sizing: border-box;
     position: relative;
     width: 100%;
     padding: 4rem 2rem;

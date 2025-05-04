@@ -11,24 +11,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($user && password_verify($password, $user['password'])) {
+        if ($user && password_verify($password, $user['password']) && $user['role'] == 'admin') {
             $_SESSION['user'] = $user;
             echo "<script>
                 document.addEventListener('DOMContentLoaded', function() {
                     const successPopup = document.getElementById('success-popup');
                     successPopup.style.display = 'block';
                     setTimeout(() => {
-                        window.location.href = 'index.php';
+                        window.location.href = 'admin_dashboard.php';
                     }, 2000);
                 });
             </script>";
-        } else {
+        }
+        else if ($user && password_verify($password, $user['password']) && $user['role'] == 'user') {
+          $_SESSION['user'] = $user;
+          echo "<script>
+              document.addEventListener('DOMContentLoaded', function() {
+                  const successPopup = document.getElementById('success-popup');
+                  successPopup.style.display = 'block';
+                  setTimeout(() => {
+                      window.location.href = 'index.php';
+                  }, 2000);
+              });
+          </script>";
+        }
+        else {
             $error = "Invalid email or password.";
         }
     } catch (PDOException $e) {
         $error = "Error: " . $e->getMessage();
+      }
     }
-}
+
 ?>
 
 <!DOCTYPE html>
