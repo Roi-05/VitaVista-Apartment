@@ -5,13 +5,14 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    color: gold;
+    color: rgb(220, 219, 218);
 }
 
 .first-content h1 {
     font-size: 4rem;
     margin-bottom: 1rem;
     font-family: 'Playfair Display', serif;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .first-content p {

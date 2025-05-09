@@ -41,7 +41,7 @@ session_start();
             
         </div>
         <div style="color: white; font-size: 2rem;">
-        MEL tapalodo JAYVEE pogi       </div>
+         </div>
         <nav class="nav-links">
             <a href="#first">Home</a>
             <a href="#about">About</a>
