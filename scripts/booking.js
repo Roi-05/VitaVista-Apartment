@@ -189,14 +189,20 @@ document.addEventListener('DOMContentLoaded', () => {
   paymentForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    const paymentMethod = document.getElementById('payment-method').value;
+    if (!paymentMethod) {
+      showModal('Please select a payment method');
+      return;
+    }
+
     const userId = document.body.dataset.userId;
     const bookingData = {
       userId: userId,
-      apartmentId: apartmentId, // Use the apartmentId determined in the bookButton event listener
+      apartmentId: apartmentId,
       checkIn: document.getElementById('check-in').value,
       checkOut: document.getElementById('check-out').value,
       totalPrice: document.getElementById('total-price').textContent.replace(/,/g, ''),
-      paymentMethod: document.getElementById('payment-method').value,
+      paymentMethod: paymentMethod,
       numberOfRooms: document.getElementById('bookrooms').value
     };
 
@@ -212,10 +218,29 @@ document.addEventListener('DOMContentLoaded', () => {
       const result = await response.json();
 
       if (result.success) {
+        // Update wallet balance if available
+        const walletBalanceElement = document.querySelector('.wallet-balance p');
+        if (walletBalanceElement && result.newBalance !== undefined) {
+          walletBalanceElement.textContent = `₱${parseFloat(result.newBalance).toLocaleString()}`;
+        }
+
         showModal('Booking confirmed! Check your email for details.');
         document.getElementById('payment-modal').style.display = 'none';
+        
+        // Redirect to profile dashboard after 2 seconds
+        setTimeout(() => {
+          window.location.href = 'profile_dashboard.php';
+        }, 2000);
       } else {
-        showModal(Error, `${result.message}`);
+        if (result.message.includes('Insufficient wallet balance')) {
+          showModal('Insufficient wallet balance. Please deposit more funds before booking.');
+          // Redirect to wallet section after 2 seconds
+          setTimeout(() => {
+            window.location.href = 'profile_dashboard.php#wallet';
+          }, 2000);
+        } else {
+          showModal(result.message);
+        }
       }
     } catch (error) {
       console.error('Error:', error);

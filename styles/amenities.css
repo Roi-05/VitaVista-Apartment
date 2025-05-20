@@ -1,0 +1,303 @@
+.amenities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.amenity-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #eee;
+}
+
+.amenity-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.amenity-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.amenity-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.amenity-card:hover .amenity-image img {
+    transform: scale(1.05);
+}
+
+.amenity-content {
+    padding: 1.5rem;
+}
+
+.amenity-content i {
+    font-size: 2rem;
+    color:  #001166;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.amenity-content h3 {
+    margin: 0.8rem 0;
+    color: #001166;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.amenity-content p {
+    color: #666;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.amenity-price {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #001166;
+    font-weight: 500;
+}
+
+.amenity-price .price {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: gold;
+}
+
+.amenity-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+}
+
+.subscribe-btn {
+    background: #001166;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.subscribe-btn:hover {
+    background: gold;
+    color: #001166;
+    transform: translateY(-2px);
+}
+
+.subscribe-btn:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.recommendations-section {
+    margin-top: 3rem;
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.recommendations-section h3 {
+    color: #001166;
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #eee;
+}
+
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-top: 1.5rem;
+}
+
+.recommendation-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+    border: 1px solid #eee;
+}
+
+.recommendation-card:hover {
+    transform: translateY(-5px);
+}
+
+.recommendation-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.recommendation-content {
+    padding: 1.8rem;
+}
+
+.recommendation-content h4 {
+    margin: 0 0 1rem 0;
+    color: #001166;
+    font-size: 1.3rem;
+}
+
+.recommendation-content p {
+    color: #666;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.recommendation-btn {
+    background: gold;
+    color: #001166;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    width: 100%;
+}
+
+.recommendation-btn:hover {
+    background: #001166;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.status-badge {
+    background: #e8f5e9;
+    color: #001166;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-badge.subscribed {
+    background: gold;
+    color: #001166;
+}
+
+.status-badge i {
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Subscription Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.5);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active,
+.modal[style*="display: block"] {
+    display: flex !important;
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 400px;
+    width: 90vw;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    position: relative;
+    animation: fadeInModal 0.2s;
+}
+
+@keyframes fadeInModal {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal .close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    color: #001166;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.subscription-details {
+    margin-top: 2rem;
+}
+
+.subscription-price {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.subscription-price h4 {
+    color: #001166;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.subscription-price p {
+    font-size: 2rem;
+    color: gold;
+    font-weight: 600;
+}
+
+.total-price {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.total-price h4 {
+    color: #001166;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.total-price p {
+    font-size: 1.8rem;
+    color: #001166;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .amenities-grid {
+        grid-template-columns: 1fr;
+    }
+} 
