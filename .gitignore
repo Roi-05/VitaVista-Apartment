@@ -1,2 +1,4 @@
-# Ignore sensitive files
+vendor/
+composer.lock
 database/db.php
+includes/email_helper.php
