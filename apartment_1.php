@@ -19,7 +19,7 @@ if (!$apartment) {
     die("Apartment not found.");
 }
 
-$userId = $_SESSION['user']['id'];
+$userId = isset($_SESSION['user']) ? $_SESSION['user']['id'] : null;
 $pricePerNight = $apartment['price_per_night'];
 
 $bookingsQuery = $pdo->prepare("
@@ -233,9 +233,7 @@ $existingBookings = $bookingsQuery->fetchAll(PDO::FETCH_ASSOC);
     <form id="payment-form">
       <label for="payment-method">Choose payment method:</label>
       <select id="payment-method" required>
-        <option value="credit-card">Credit Card</option>
-        <option value="gcash">GCash</option>
-        <option value="bank-transfer">Bank Transfer</option>
+        <option value="wallet">Wallet</option>
       </select>
       <button type="submit" class="payment-button">Confirm Booking</button>
     </form>

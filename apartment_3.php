@@ -19,7 +19,7 @@ if (!$apartment) {
     die("Apartment not found.");
 }
 
-$userId = $_SESSION['user']['id'];
+$userId = isset($_SESSION['user']) ? $_SESSION['user']['id'] : null;
 $pricePerNight = $apartment['price_per_night'];
 
 $bookingsQuery = $pdo->prepare("
