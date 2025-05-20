@@ -1,7 +1,14 @@
 <?php
 require __DIR__ . '/database/db.php';
 session_start();
+
+if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin') {
+    header("Location: admin_dashboard.php");
+    exit;
+}
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -52,7 +59,7 @@ session_start();
             <div class="profile-container">
                 <img src="Pictures/Default_pfp.jpg" alt="Profile Picture" class="profile-picture">
                 <div class="dropdown-menu">
-                    <a href="profile_dashboard.php">Profile</a>
+                    <a href="profile_dashboard.php">Dashboard</a>
                     <a href="logout.php">Logout</a>
                 </div>
             </div>
@@ -131,8 +138,8 @@ session_start();
 
                 <h4>💬 Why Choose Vita Vista?</h4>
                 <p>
-                    At Vita Vista, we don’t just offer apartments — we offer a place you can proudly call home. 
-                    Whether you’re a young professional, a growing family, or someone seeking a peaceful retreat away from the city's busy life, Vita Vista provides accessibility, affordability, and a higher quality of living.
+                    At Vita Vista, we don't just offer apartments — we offer a place you can proudly call home. 
+                    Whether you're a young professional, a growing family, or someone seeking a peaceful retreat away from the city's busy life, Vita Vista provides accessibility, affordability, and a higher quality of living.
                 </p>
 
                 <h4>📍 Visit Us:</h4>
@@ -285,7 +292,66 @@ session_start();
     </script>
 
     <script>
-        (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="Hd_72aiMggC-PmJBKHMNU";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+        (function(){
+            if(!window.chatbase||window.chatbase("getState")!=="initialized"){
+                window.chatbase=(...arguments)=>{
+                    if(!window.chatbase.q){
+                        window.chatbase.q=[]
+                    }
+                    window.chatbase.q.push(arguments)
+                };
+                window.chatbase=new Proxy(window.chatbase,{
+                    get(target,prop){
+                        if(prop==="q"){
+                            return target.q
+                        }
+                        return(...args)=>target(prop,...args)
+                    }
+                })
+            }
+            const onLoad=function(){
+                const script=document.createElement("script");
+                script.src="https://www.chatbase.co/embed.min.js";
+                script.id="Hd_72aiMggC-PmJBKHMNU";
+                script.domain="www.chatbase.co";
+                document.body.appendChild(script);
+                
+                // Initialize chat with user info if available
+                <?php if (isset($_SESSION['user'])): ?>
+                // Clear any existing chat state
+                window.chatbase('clear');
+                
+                // Initialize with user info and load history
+                window.chatbase('init', {
+                    userId: '<?php echo $_SESSION['user']['id']; ?>',
+                    userEmail: '<?php echo $_SESSION['user']['email']; ?>',
+                    userName: '<?php echo $_SESSION['user']['fullname']; ?>',
+                    loadHistory: true,
+                    sessionId: '<?php echo session_id(); ?>'
+                });
+                
+                // Set up event listener for chat state changes
+                window.chatbase('onStateChange', function(state) {
+                    if (state === 'ready') {
+                        // Chat is ready, load user's history
+                        window.chatbase('loadHistory', {
+                            userId: '<?php echo $_SESSION['user']['id']; ?>'
+                        });
+                    }
+                });
+                <?php else: ?>
+                // For non-logged in users, initialize without user info
+                window.chatbase('init', {
+                    loadHistory: false
+                });
+                <?php endif; ?>
+            };
+            if(document.readyState==="complete"){
+                onLoad()
+            }else{
+                window.addEventListener("load",onLoad)
+            }
+        })();
     </script>
 </body>
 </html>
