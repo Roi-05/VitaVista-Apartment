@@ -7,20 +7,38 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
 }
 
 require __DIR__ . '/database/db.php';
+require_once __DIR__ . '/get_apartment_availability.php';
 
 $admin = $_SESSION['user'];
 
-// Get statistics
+// Get dashboard statistics
 $stats = [
-    'total_users' => $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'user'")->fetchColumn(),
+    'total_users' => $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn(),
     'total_bookings' => $pdo->query("SELECT COUNT(*) FROM bookings")->fetchColumn(),
-    'total_revenue' => $pdo->query("SELECT SUM(total_price) FROM bookings")->fetchColumn(),
-    'active_apartments' => $pdo->query("SELECT COUNT(*) FROM apartments WHERE availability > 0")->fetchColumn()
+    'active_bookings' => $pdo->query("
+        SELECT COUNT(*) FROM bookings 
+        WHERE check_in_date <= CURDATE() 
+        AND check_out_date >= CURDATE() 
+        AND status NOT IN ('cancelled', 'completed')
+    ")->fetchColumn(),
+    'upcoming_bookings' => $pdo->query("
+        SELECT COUNT(*) FROM bookings 
+        WHERE check_in_date > CURDATE() 
+        AND status NOT IN ('cancelled', 'completed')
+    ")->fetchColumn(),
+    'total_revenue' => $pdo->query("SELECT COALESCE(SUM(total_price), 0) FROM bookings WHERE payment_status = 'paid'")->fetchColumn(),
+    'active_apartments' => count(array_filter(getAvailableApartments($pdo), function($apt) { return $apt['is_available']; }))
 ];
 
 // Get recent bookings
 $recentBookings = $pdo->query("
-    SELECT b.*, u.fullname, a.type, a.unit
+    SELECT b.*, u.fullname, a.type, a.unit,
+           CASE 
+               WHEN b.status IN ('cancelled', 'completed') THEN b.status
+               WHEN b.check_in_date > CURDATE() THEN 'upcoming'
+               WHEN b.check_in_date <= CURDATE() AND b.check_out_date >= CURDATE() THEN 'active'
+               ELSE 'completed'
+           END as status
     FROM bookings b
     JOIN users u ON b.user_id = u.id
     JOIN apartments a ON b.apartment_id = a.id
@@ -38,14 +56,8 @@ $users = $pdo->query("
     ORDER BY u.created_at DESC
 ")->fetchAll(PDO::FETCH_ASSOC);
 
-// Get all apartments
-$apartments = $pdo->query("
-    SELECT a.*, COUNT(b.id) as total_bookings
-    FROM apartments a
-    LEFT JOIN bookings b ON a.id = b.apartment_id
-    GROUP BY a.id
-    ORDER BY a.type
-")->fetchAll(PDO::FETCH_ASSOC);
+// Get apartments with their availability status
+$apartments = getAvailableApartments($pdo);
 ?>
 
 <!DOCTYPE html>
@@ -55,8 +67,10 @@ $apartments = $pdo->query("
     <title>Admin Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="styles/admin.css?v=<?php echo time(); ?>">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 <body>
 
@@ -81,6 +95,9 @@ $apartments = $pdo->query("
         <li class="nav-item" data-target="reports">
             <i class="fas fa-chart-bar"></i> Reports
         </li>
+        <li class="nav-item" data-target="amenities">
+            <i class="fas fa-swimming-pool"></i> Amenities
+        </li>
         <li class="nav-item" onclick="if (confirm('Are you sure you want to log out?')) { window.location.href='logout.php'; }">
             <i class="fas fa-sign-out-alt"></i> Logout
         </li>
@@ -102,13 +119,23 @@ $apartments = $pdo->query("
                 <p><?php echo number_format($stats['total_bookings']); ?></p>
             </div>
             <div class="stat-card">
+                <i class="fas fa-calendar-check"></i>
+                <h3>Active Bookings</h3>
+                <p><?php echo number_format($stats['active_bookings']); ?></p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-calendar-alt"></i>
+                <h3>Upcoming Bookings</h3>
+                <p><?php echo number_format($stats['upcoming_bookings']); ?></p>
+            </div>
+            <div class="stat-card">
                 <i class="fas fa-peso-sign"></i>
                 <h3>Total Revenue</h3>
                 <p>₱<?php echo number_format($stats['total_revenue'], 2); ?></p>
             </div>
             <div class="stat-card">
                 <i class="fas fa-building"></i>
-                <h3>Active Apartments</h3>
+                <h3>Available Apartments</h3>
                 <p><?php echo number_format($stats['active_apartments']); ?></p>
             </div>
         </div>
@@ -155,7 +182,7 @@ $apartments = $pdo->query("
                             <td><?php echo date('M d, Y', strtotime($booking['check_in_date'])); ?></td>
                             <td><?php echo date('M d, Y', strtotime($booking['check_out_date'])); ?></td>
                             <td>₱<?php echo number_format($booking['total_price'], 2); ?></td>
-                            <td><span class="status-badge active">Active</span></td>
+                            <td><span class="status-badge <?php echo $booking['status']; ?>"><?php echo ucfirst($booking['status']); ?></span></td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -168,14 +195,18 @@ $apartments = $pdo->query("
     <div id="bookings" class="content-section">
         <div class="section-header">
             <h2>Manage Bookings</h2>
+            <div class="booking-tabs">
+                <button class="tab-btn active" data-tab="onsite">On-site Bookings</button>
+                <button class="tab-btn" data-tab="online">Online Bookings</button>
+            </div>
             <div class="booking-filters">
                 <button class="filter-btn active" data-filter="all">All</button>
                 <button class="filter-btn" data-filter="upcoming">Upcoming</button>
                 <button class="filter-btn" data-filter="active">Active</button>
                 <button class="filter-btn" data-filter="completed">Completed</button>
             </div>
-            <button class="add-btn" onclick="showAddBookingModal()">
-                <i class="fas fa-plus"></i> Add Booking
+            <button class="add-btn" id="addBookingBtn" onclick="showAddBookingModal()">
+                <i class="fas fa-plus"></i> Add On-site Booking
             </button>
         </div>
         <div class="table-responsive">
@@ -188,6 +219,7 @@ $apartments = $pdo->query("
                         <th>Check-in</th>
                         <th>Check-out</th>
                         <th>Amount</th>
+                        <th>Payment Status</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -216,7 +248,7 @@ $apartments = $pdo->query("
 
         <div class="apartments-grid">
             <?php foreach ($apartments as $apt): ?>
-            <div class="apartment-card">
+            <div class="apartment-card" data-id="<?php echo $apt['id']; ?>">
                 <div class="apartment-image">
                     <?php
                     $imagePath = '';
@@ -237,9 +269,9 @@ $apartments = $pdo->query("
                     ?>
                     <img src="<?php echo $imagePath; ?>" 
                          alt="<?php echo htmlspecialchars($apt['type']); ?>">
-                    <span class="status-badge-apt <?php echo $apt['availability'] > 0 ? 'available' : 'occupied'; ?>">
-                        <i class="fas <?php echo $apt['availability'] > 0 ? 'fa-check-circle' : 'fa-times-circle'; ?>"></i>
-                        <?php echo $apt['availability'] > 0 ? 'Available' : 'Occupied'; ?>
+                    <span class="status-badge-apt <?php echo $apt['is_available'] ? 'available' : 'occupied'; ?>">
+                        <i class="fas <?php echo $apt['is_available'] ? 'fa-check-circle' : 'fa-times-circle'; ?>"></i>
+                        <?php echo $apt['is_available'] ? 'Available' : 'Occupied'; ?>
                     </span>
                 </div>
                 <div class="apartment-content">
@@ -292,10 +324,10 @@ $apartments = $pdo->query("
                     <tr>
                         <th>Name</th>
                         <th>Email</th>
+                        <th>Contact Number</th>
                         <th>Total Bookings</th>
                         <th>Joined Date</th>
                         <th>Status</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -303,16 +335,13 @@ $apartments = $pdo->query("
                     <tr>
                         <td><?php echo htmlspecialchars($user['fullname']); ?></td>
                         <td><?php echo htmlspecialchars($user['email']); ?></td>
+                        <td><?php echo htmlspecialchars($user['phone_number'] ?? 'N/A'); ?></td>
                         <td><?php echo $user['total_bookings']; ?></td>
                         <td><?php echo date('M d, Y', strtotime($user['created_at'])); ?></td>
                         <td>
                             <span class="status-badge <?php echo $user['status'] ?? 'active'; ?>">
                                 <?php echo ucfirst($user['status'] ?? 'active'); ?>
                             </span>
-                        </td>
-                        <td>
-                            <button onclick="editUser(<?php echo $user['id']; ?>)">Edit</button>
-                            <button onclick="deleteUser(<?php echo $user['id']; ?>)">Delete</button>
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -340,6 +369,38 @@ $apartments = $pdo->query("
                 <h3>User Growth</h3>
                 <canvas id="userChart"></canvas>
             </div>
+        </div>
+    </div>
+
+    <!-- Amenities Section -->
+    <div id="amenities" class="content-section">
+        <div class="section-header">
+            <h2><i class="fas fa-swimming-pool"></i> Manage Amenity Subscriptions</h2>
+            <div class="amenity-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="active">Active</button>
+                <button class="filter-btn" data-filter="cancelled">Cancelled</button>
+                <button class="filter-btn" data-filter="expired">Expired</button>
+                <button class="filter-btn" data-filter="cancellation_requested">Cancellation Requested</button>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Amenity Type</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Total Price</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="amenities-table">
+                    <!-- Amenity subscriptions will be loaded here via AJAX -->
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -382,7 +443,66 @@ $apartments = $pdo->query("
         <span class="close">&times;</span>
         <h2>Add New Booking</h2>
         <form id="bookingForm">
-            <!-- Form fields will be added here -->
+            <div class="form-group">
+                <label for="guestName">Guest Name:</label>
+                <input type="text" id="guestName" name="guestName" required>
+            </div>
+            <div class="form-group">
+                <label for="guestEmail">Guest Email:</label>
+                <input type="email" id="guestEmail" name="guestEmail" required>
+            </div>
+            <div class="form-group">
+                <label for="guestPhone">Guest Phone:</label>
+                <input type="tel" id="guestPhone" name="guestPhone" required>
+            </div>
+            <div class="form-group">
+                <label for="apartmentType">Apartment Type:</label>
+                <select id="apartmentType" name="apartmentType" required>
+                    <option value="">Select Type</option>
+                    <option value="studio">Studio</option>
+                    <option value="1-bedroom">1 Bedroom</option>
+                    <option value="2-bedroom">2 Bedroom</option>
+                    <option value="penthouse">Penthouse</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="apartmentUnit">Unit:</label>
+                <select id="apartmentUnit" name="apartmentUnit" required>
+                    <option value="">Select Unit</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="checkIn">Check-in Date:</label>
+                <input type="date" id="checkIn" name="checkIn" required>
+            </div>
+            <div class="form-group">
+                <label for="checkOut">Check-out Date:</label>
+                <input type="date" id="checkOut" name="checkOut" required>
+            </div>
+            <div class="form-group">
+                <label for="paymentMethod">Payment Method:</label>
+                <select id="paymentMethod" name="paymentMethod" required>
+                    <option value="cash">Cash</option>
+                    <option value="card">Card</option>
+                    <option value="bank_transfer">Bank Transfer</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="paymentStatus">Payment Status:</label>
+                <select id="paymentStatus" name="paymentStatus" required>
+                    <option value="paid">Paid</option>
+                    <option value="pending">Pending</option>
+                    <option value="partial">Partial Payment</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="totalAmount">Total Amount:</label>
+                <input type="number" id="totalAmount" name="totalAmount" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">Create Booking</button>
+                <button type="button" class="cancel-btn">Cancel</button>
+            </div>
         </form>
     </div>
 </div>
@@ -691,11 +811,361 @@ $apartments = $pdo->query("
         background: #dc3545;
         color: white;
     }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 600px;
+        margin: 50px auto;
+        position: relative;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .form-group textarea {
+        resize: vertical;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 20px;
+    }
+
+    .submit-btn,
+    .cancel-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .submit-btn {
+        background: #28a745;
+        color: white;
+    }
+
+    .submit-btn:hover {
+        background: #218838;
+    }
+
+    .cancel-btn {
+        background: #dc3545;
+        color: white;
+    }
+
+    .cancel-btn:hover {
+        background: #c82333;
+    }
+
+    .close {
+        position: absolute;
+        right: 20px;
+        top: 15px;
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
+    }
+
+    .close:hover {
+        color: #333;
+    }
+
+    .booking-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .tab-btn {
+        padding: 8px 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .tab-btn.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .booking-type-badge {
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .booking-type-badge.onsite {
+        background: #17a2b8;
+        color: white;
+    }
+
+    .booking-type-badge.online {
+        background: #6c757d;
+        color: white;
+    }
+
+    .mark-paid-btn {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .mark-paid-btn:hover {
+        background-color: #218838;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .apartment-card {
+        transition: opacity 0.3s ease;
+    }
+
+    .complete-btn, .cancel-btn {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin: 0 2px;
+        font-size: 0.9em;
+    }
+
+    .complete-btn {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .complete-btn:hover {
+        background-color: #218838;
+    }
+
+    .cancel-btn {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .cancel-btn:hover {
+        background-color: #c82333;
+    }
+
+    .complete-btn:disabled, .cancel-btn:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+        opacity: 0.65;
+    }
+
+    .amenity-filters {
+        margin-bottom: 20px;
+    }
+
+    .amenity-filters .filter-btn {
+        padding: 8px 15px;
+        margin-right: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .amenity-filters .filter-btn.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .status-badge.expired {
+        background: #6c757d;
+        color: white;
+    }
+
+    .status-badge.cancellation_requested {
+        background: #ffc107;
+        color: #000;
+    }
 </style>
 
-<script src="scripts/admin.js"></script>
+<script src="scripts/admin.js?v=<?php echo time(); ?>"></script>
 <script>
-// Add this to your existing JavaScript
+// Add these functions at the beginning of your script section
+function loadBookings(type = 'onsite', filter = 'all') {
+    const tbody = document.getElementById('bookings-table');
+    tbody.innerHTML = '<tr><td colspan="9" class="text-center">Loading...</td></tr>';
+
+    fetch(`get_bookings.php?type=${type}&filter=${filter}`)
+        .then(response => response.json())
+        .then(data => {
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center">No bookings found</td></tr>';
+                return;
+            }
+
+            data.forEach(booking => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${booking.id}</td>
+                    <td>${booking.fullname}</td>
+                    <td>${booking.type} - ${booking.unit}</td>
+                    <td>${formatDate(booking.check_in_date)}</td>
+                    <td>${formatDate(booking.check_out_date)}</td>
+                    <td>₱${formatNumber(booking.total_price)}</td>
+                    <td>
+                        <span class="status-badge ${booking.payment_status}">
+                            ${capitalizeFirst(booking.payment_status)}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge ${booking.status}">
+                            ${capitalizeFirst(booking.status)}
+                        </span>
+                    </td>
+                    <td>
+                        ${booking.booking_type === 'onsite' ? `
+                            <button onclick="completeBooking(${booking.id})" class="complete-btn" ${booking.status === 'completed' ? 'disabled' : ''}>
+                                <i class="fas fa-check"></i> Complete
+                            </button>
+                            <button onclick="cancelBooking(${booking.id})" class="cancel-btn" ${booking.status === 'cancelled' ? 'disabled' : ''}>
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        ` : booking.payment_status === 'pending' ? `
+                            <button onclick="markAsPaid(${booking.id})" class="mark-paid-btn">
+                                <i class="fas fa-check"></i> Mark as Paid
+                            </button>
+                        ` : ''}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading bookings:', error);
+            tbody.innerHTML = '<tr><td colspan="9" class="text-center">Error loading bookings</td></tr>';
+        });
+}
+
+// Add event listeners for booking filters
+document.addEventListener('DOMContentLoaded', function() {
+    // Booking tabs
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const addBookingBtn = document.getElementById('addBookingBtn');
+    
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const isOnsiteTab = this.dataset.tab === 'onsite';
+            addBookingBtn.style.display = isOnsiteTab ? 'flex' : 'none';
+            
+            loadBookings(this.dataset.tab, document.querySelector('.filter-btn.active').dataset.filter);
+        });
+    });
+
+    // Booking filters
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
+            loadBookings(activeTab, this.dataset.filter);
+        });
+    });
+
+    // Apartment search
+    const apartmentSearch = document.getElementById('apartmentSearch');
+    if (apartmentSearch) {
+        apartmentSearch.addEventListener('input', debounce(function() {
+            const searchTerm = this.value.toLowerCase();
+            const apartmentCards = document.querySelectorAll('.apartment-card');
+            
+            apartmentCards.forEach(card => {
+                const type = card.querySelector('h3').textContent.toLowerCase();
+                const unit = card.querySelector('.unit-number').textContent.toLowerCase();
+                const price = card.querySelector('.detail-info .value').textContent.toLowerCase();
+                
+                const matches = type.includes(searchTerm) || 
+                              unit.includes(searchTerm) || 
+                              price.includes(searchTerm);
+                
+                card.style.display = matches ? '' : 'none';
+            });
+        }, 300));
+    }
+
+    // Initial load of onsite bookings
+    loadBookings('onsite', 'all');
+});
+
+// Utility function for debouncing search
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func.apply(this, args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
 function showSection(sectionId) {
     // Hide all sections
     document.querySelectorAll('.content-section').forEach(section => {
@@ -788,6 +1258,367 @@ document.querySelectorAll('.cancellation-filters .filter-btn').forEach(btn => {
         loadCancellationRequests(btn.dataset.filter);
     });
 });
+
+function showAddBookingModal() {
+    const modal = document.getElementById('bookingModal');
+    modal.style.display = 'block';
+    initializeDatePickers();
+}
+
+// Handle apartment type change
+document.getElementById('apartmentType').addEventListener('change', async function() {
+    const type = this.value;
+    const unitSelect = document.getElementById('apartmentUnit');
+    
+    if (!type) {
+        unitSelect.innerHTML = '<option value="">Select Unit</option>';
+        return;
+    }
+    
+    try {
+        const response = await fetch(`get_available_units.php?type=${type}`);
+        const data = await response.json();
+        
+        unitSelect.innerHTML = '<option value="">Select Unit</option>';
+        if (Array.isArray(data)) {
+            data.forEach(unit => {
+                const option = document.createElement('option');
+                option.value = unit.id;
+                option.textContent = `${unit.unit} (₱${parseFloat(unit.price_per_night).toLocaleString()}/night)`;
+                unitSelect.appendChild(option);
+            });
+        } else if (data.error) {
+            console.error('Error:', data.error);
+        }
+    } catch (error) {
+        console.error('Error fetching units:', error);
+    }
+});
+
+// Initialize date pickers with disabled dates
+function initializeDatePickers() {
+    const checkInPicker = flatpickr("#checkIn", {
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        onChange: function(selectedDates, dateStr) {
+            checkOutPicker.set("minDate", selectedDates[0]);
+            updateTotalPrice();
+        }
+    });
+
+    const checkOutPicker = flatpickr("#checkOut", {
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        onChange: function() {
+            updateTotalPrice();
+        }
+    });
+
+    // Function to update total price
+    function updateTotalPrice() {
+        const checkIn = checkInPicker.selectedDates[0];
+        const checkOut = checkOutPicker.selectedDates[0];
+        const unitSelect = document.getElementById('apartmentUnit');
+        const selectedOption = unitSelect.options[unitSelect.selectedIndex];
+        
+        if (checkIn && checkOut && selectedOption) {
+            const priceText = selectedOption.textContent.match(/₱([\d,]+)/);
+            if (priceText) {
+                const pricePerNight = parseFloat(priceText[1].replace(/,/g, ''));
+                const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+                const totalPrice = pricePerNight * nights;
+                document.getElementById('totalAmount').value = totalPrice.toFixed(2);
+            }
+        }
+    }
+
+    // Add event listener for unit selection
+    document.getElementById('apartmentUnit').addEventListener('change', function() {
+        const selectedUnit = this.value;
+        if (selectedUnit) {
+            // Fetch booked dates for the selected unit
+            fetch(`get_booked_dates.php?unit_id=${selectedUnit}`)
+                .then(response => response.json())
+                .then(bookedDates => {
+                    // Disable booked dates in both pickers
+                    const disabledDates = bookedDates.map(booking => ({
+                        from: booking.check_in_date,
+                        to: booking.check_out_date
+                    }));
+                    
+                    checkInPicker.set('disable', disabledDates);
+                    checkOutPicker.set('disable', disabledDates);
+                })
+                .catch(error => console.error('Error fetching booked dates:', error));
+        }
+    });
+}
+
+// Handle form submission
+document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const bookingData = Object.fromEntries(formData.entries());
+    
+    try {
+        const response = await fetch('add_booking.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(bookingData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Booking created successfully!');
+            document.getElementById('bookingModal').style.display = 'none';
+            // Refresh the bookings table
+            loadBookings();
+        } else {
+            alert('Error: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error creating booking:', error);
+        alert('An error occurred while creating the booking.');
+    }
+});
+
+// Close modal when clicking the close button or outside the modal
+document.querySelector('.close').addEventListener('click', function() {
+    document.getElementById('bookingModal').style.display = 'none';
+});
+
+document.querySelector('.cancel-btn').addEventListener('click', function() {
+    document.getElementById('bookingModal').style.display = 'none';
+});
+
+window.addEventListener('click', function(e) {
+    const modal = document.getElementById('bookingModal');
+    if (e.target === modal) {
+        modal.style.display = 'none';
+    }
+});
+
+function formatDate(dateString) {
+    return new Date(dateString).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+    });
+}
+
+function formatNumber(number) {
+    return parseFloat(number).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+function capitalizeFirst(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function updateApartmentCard(apartment) {
+    const card = document.querySelector(`.apartment-card[data-id="${apartment.id}"]`);
+    if (card) {
+        // Update status badge
+        const statusBadge = card.querySelector('.status-badge-apt');
+        statusBadge.className = `status-badge-apt ${apartment.is_available ? 'available' : 'occupied'}`;
+        statusBadge.innerHTML = `
+            <i class="fas ${apartment.is_available ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+            ${apartment.is_available ? 'Available' : 'Occupied'}
+        `;
+
+        // Update other apartment details
+        card.querySelector('.unit-number').textContent = apartment.unit;
+        card.querySelector('.detail-info .value').textContent = `₱${parseFloat(apartment.price_per_night).toFixed(2)}`;
+    }
+}
+
+// Add this function to handle marking bookings as paid
+function markAsPaid(bookingId) {
+    if (!confirm('Are you sure you want to mark this booking as paid?')) {
+        return;
+    }
+
+    fetch('mark_booking_paid.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ booking_id: bookingId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Booking marked as paid successfully');
+            loadBookings(); // Refresh the bookings table
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while marking the booking as paid');
+    });
+}
+
+// Add these new functions for handling booking actions
+function completeBooking(bookingId) {
+    if (!confirm('Are you sure you want to mark this booking as completed?')) {
+        return;
+    }
+
+    fetch('update_booking_status.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            booking_id: bookingId,
+            status: 'completed'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Booking marked as completed successfully');
+            // Refresh the bookings table with current filter
+            const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
+            const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+            loadBookings(activeTab, activeFilter);
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating the booking status');
+    });
+}
+
+function cancelBooking(bookingId) {
+    if (!confirm('Are you sure you want to cancel this booking?')) {
+        return;
+    }
+
+    fetch('update_booking_status.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            booking_id: bookingId,
+            status: 'cancelled'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Booking cancelled successfully');
+            // Refresh the bookings table with current filter
+            const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
+            const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+            loadBookings(activeTab, activeFilter);
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while cancelling the booking');
+    });
+}
+
+// Add this new function to load amenity subscriptions
+function loadAmenitySubscriptions(filter = 'all') {
+    const tbody = document.getElementById('amenities-table');
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center">Loading...</td></tr>';
+
+    fetch(`get_amenity_subscriptions.php?filter=${filter}`)
+        .then(response => response.json())
+        .then(data => {
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center">No amenity subscriptions found</td></tr>';
+                return;
+            }
+
+            data.forEach(subscription => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${subscription.id}</td>
+                    <td>${subscription.fullname}</td>
+                    <td>${subscription.amenity_type}</td>
+                    <td>${formatDate(subscription.start_date)}</td>
+                    <td>${formatDate(subscription.end_date)}</td>
+                    <td>₱${formatNumber(subscription.total_price)}</td>
+                    <td>
+                        <span class="status-badge ${subscription.status}">
+                            ${capitalizeFirst(subscription.status)}
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading amenity subscriptions:', error);
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center">Error loading amenity subscriptions</td></tr>';
+        });
+}
+
+// Add event listeners for amenity filters
+document.addEventListener('DOMContentLoaded', function() {
+    // ... existing code ...
+
+    // Amenity filters
+    const amenityFilterBtns = document.querySelectorAll('.amenity-filters .filter-btn');
+    amenityFilterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            amenityFilterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            loadAmenitySubscriptions(this.dataset.filter);
+        });
+    });
+
+    // Initial load of amenity subscriptions
+    loadAmenitySubscriptions('all');
+});
+
+// Function to handle amenity subscription cancellation
+function cancelAmenitySubscription(subscriptionId) {
+    if (!confirm('Are you sure you want to cancel this amenity subscription?')) {
+        return;
+    }
+
+    fetch('cancel_amenity_subscription.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            subscription_id: subscriptionId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Amenity subscription cancelled successfully');
+            loadAmenitySubscriptions(document.querySelector('.amenity-filters .filter-btn.active').dataset.filter);
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while cancelling the amenity subscription');
+    });
+}
 </script>
 </body>
 </html>

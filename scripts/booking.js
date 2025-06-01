@@ -9,7 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const pricePerNight = parseFloat(bookingSection.dataset.pricePerNight);
   const isUserSignedIn = document.body.dataset.userSignedIn === 'true';
+  const isAdmin = document.body.dataset.userRole === 'admin';
   console.log('Is user signed in:', isUserSignedIn);
+  console.log('Is admin:', isAdmin);
 
   const checkInInput = document.getElementById('check-in');
   const checkOutInput = document.getElementById('check-out');
@@ -17,9 +19,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const bookButton = document.querySelector('.book-button');
   const modal = document.getElementById('popup-modal');
   const modalMessage = document.getElementById('modal-message');
+  const modalIcon = modal.querySelector('.modal-icon');
   const closeModalButton = document.getElementById('close-modal');
+  const loadingSpinner = document.getElementById('loading-spinner');
 
-  if (!checkInInput || !checkOutInput || !bookroomsSelect || !bookButton || !modal || !modalMessage || !closeModalButton) {
+  if (!checkInInput || !checkOutInput || !bookroomsSelect || !bookButton || !modal || !modalMessage || !closeModalButton || !loadingSpinner) {
     console.error('One or more required elements are missing');
     return;
   }
@@ -28,10 +32,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const checkInPicker = flatpickr(checkInInput, { dateFormat: 'Y-m-d' });
   const checkOutPicker = flatpickr(checkOutInput, { dateFormat: 'Y-m-d' });
 
-  function showModal(message) {
+  function showLoading() {
+    loadingSpinner.style.display = 'flex';
+  }
+
+  function hideLoading() {
+    loadingSpinner.style.display = 'none';
+  }
+
+  function showModal(message, isSuccess = true) {
     console.log('Showing modal:', message);
     modalMessage.textContent = message;
-    modal.style.display = 'block';
+    modalIcon.className = 'modal-icon ' + (isSuccess ? 'success' : 'error');
+    modal.style.display = 'flex';
   }
 
   function hideModal() {
@@ -85,14 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Validate dates
       if (checkIn < today || checkOut < today) {
-        showModal('Booking dates cannot be in the past.');
+        showModal('Booking dates cannot be in the past.', false);
         document.getElementById('total-price').textContent = '0';
         document.getElementById('total-nights').textContent = '0';
         return;
       }
 
       if (checkOut <= checkIn) {
-        showModal('Check-out date must be after the check-in date.');
+        showModal('Check-out date must be after the check-in date.', false);
         document.getElementById('total-price').textContent = '0';
         document.getElementById('total-nights').textContent = '0';
         return;
@@ -102,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const nights = (checkOut - checkIn) / (1000 * 60 * 60 * 24);
 
       // Calculate the total price
-      const totalPrice = nights * pricePerNight;;
+      const totalPrice = nights * pricePerNight;
 
       // Update the UI
       document.getElementById('total-price').textContent = totalPrice.toLocaleString();
@@ -118,11 +131,11 @@ document.addEventListener('DOMContentLoaded', () => {
   checkOutInput.addEventListener('change', () => calculatePrice(pricePerNight));
   bookroomsSelect.addEventListener('change', () => calculatePrice(pricePerNight));
 
-  let apartmentId = null; // Define apartmentId in a higher scope
+  let apartmentId = null;
 
-  bookButton.addEventListener('click', () => {
+  bookButton.addEventListener('click', async () => {
     if (!isUserSignedIn) {
-      showModal('You must be signed in to book.');
+      showModal('You must be signed in to book.', false);
       return;
     }
 
@@ -144,44 +157,51 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Apartment type:', apartmentType);
     console.log('Selected option:', selectedOption);
 
-    const apartmentMapping = [
-      { id: 1, type: "studio", unit: "Unit 1" },
-      { id: 2, type: "studio", unit: "Unit 2" },
-      { id: 3, type: "studio", unit: "Unit 3" },
-      { id: 4, type: "1-bedroom", unit: "Unit 1" },
-      { id: 5, type: "1-bedroom", unit: "Unit 2" },
-      { id: 6, type: "1-bedroom", unit: "Unit 3" },
-      { id: 7, type: "2-bedroom", unit: "Unit 1" },
-      { id: 8, type: "2-bedroom", unit: "Unit 2" },
-      { id: 9, type: "2-bedroom", unit: "Unit 3" },
-      { id: 10, type: "penthouse", unit: "Unit 1" },
-      { id: 11, type: "penthouse", unit: "Unit 2" },
-      { id: 12, type: "penthouse", unit: "Unit 3" }
-    ];
+    try {
+      showLoading();
+      // Fetch apartment mapping from the server
+      const response = await fetch('get_apartment_mapping.php');
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to fetch apartment mapping');
+      }
 
-    // Find the apartmentId based on the selected type and unit
-    apartmentId = apartmentMapping.find(
-      (item) => item.type === apartmentType && item.unit === unitData.unit
-    )?.id;
+      // Find the apartmentId based on the selected type and unit
+      const apartment = data.apartments.find(
+        (item) => item.type === apartmentType && item.unit === unitData.unit
+      );
 
-    if (!unitData.available) {
-      alert('Please select an available unit');
-      return;
+      if (!apartment) {
+        throw new Error('Apartment not found');
+      }
+
+      apartmentId = apartment.id;
+
+      if (!unitData.available) {
+        showModal('Please select an available unit', false);
+        return;
+      }
+
+      if (!checkIn || !checkOut || totalPrice === '0') {
+        showModal('Please select valid dates and rooms before booking.', false);
+        return;
+      }
+
+      // Update payment modal with details
+      document.getElementById('modal-checkin').textContent = checkIn;
+      document.getElementById('modal-checkout').textContent = checkOut;
+      document.getElementById('modal-total-price').textContent = totalPrice;
+
+      // Show payment modal
+      const paymentModal = document.getElementById('payment-modal');
+      paymentModal.style.display = 'block';
+    } catch (error) {
+      console.error('Error:', error);
+      showModal(error.message || 'An error occurred while processing your booking.', false);
+    } finally {
+      hideLoading();
     }
-
-    if (!checkIn || !checkOut || totalPrice === '0') {
-      showModal('Please select valid dates and rooms before booking.');
-      return;
-    }
-
-    // Update payment modal with details
-    document.getElementById('modal-checkin').textContent = checkIn;
-    document.getElementById('modal-checkout').textContent = checkOut;
-    document.getElementById('modal-total-price').textContent = totalPrice;
-
-    // Show payment modal
-    const paymentModal = document.getElementById('payment-modal');
-    paymentModal.style.display = 'block';
   });
 
   // Handle form submission
@@ -191,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const paymentMethod = document.getElementById('payment-method').value;
     if (!paymentMethod) {
-      showModal('Please select a payment method');
+      showModal('Please select a payment method', false);
       return;
     }
 
@@ -203,10 +223,13 @@ document.addEventListener('DOMContentLoaded', () => {
       checkOut: document.getElementById('check-out').value,
       totalPrice: document.getElementById('total-price').textContent.replace(/,/g, ''),
       paymentMethod: paymentMethod,
-      numberOfRooms: document.getElementById('bookrooms').value
+      numberOfRooms: document.getElementById('bookrooms').value,
+      bookingType: isAdmin ? 'onsite' : 'online',
+      paymentStatus: isAdmin ? 'pending' : 'paid'
     };
 
     try {
+      showLoading();
       const response = await fetch('booking_handler.php', {
         method: 'POST',
         headers: {
@@ -224,27 +247,29 @@ document.addEventListener('DOMContentLoaded', () => {
           walletBalanceElement.textContent = `₱${parseFloat(result.newBalance).toLocaleString()}`;
         }
 
-        showModal('Booking confirmed! Check your email for details.');
+        showModal('Booking confirmed! Check your email for details.', true);
         document.getElementById('payment-modal').style.display = 'none';
         
         // Redirect to profile dashboard after 2 seconds
         setTimeout(() => {
-          window.location.href = 'profile_dashboard.php';
+          window.location.href = isAdmin ? 'admin_dashboard.php' : 'profile_dashboard.php';
         }, 2000);
       } else {
         if (result.message.includes('Insufficient wallet balance')) {
-          showModal('Insufficient wallet balance. Please deposit more funds before booking.');
+          showModal('Insufficient wallet balance. Please deposit more funds before booking.', false);
           // Redirect to wallet section after 2 seconds
           setTimeout(() => {
             window.location.href = 'profile_dashboard.php#wallet';
           }, 2000);
         } else {
-          showModal(result.message);
+          showModal(result.message, false);
         }
       }
     } catch (error) {
       console.error('Error:', error);
-      showModal('An error occurred during booking. Please try again.');
+      showModal('An error occurred during booking. Please try again.', false);
+    } finally {
+      hideLoading();
     }
   });
 

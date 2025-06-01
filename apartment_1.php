@@ -133,8 +133,6 @@ $existingBookings = $bookingsQuery->fetchAll(PDO::FETCH_ASSOC);
   <section id="pricing">
     <h2>Pricing</h2>
     <p><strong>Rental Price:</strong> ₱<?php echo number_format($pricePerNight, 2); ?>/night</p>
-    <p><strong>Payment Terms:</strong> 1 Month Advance + 2 Months Security Deposit</p>
-    <p><strong>Contract Term:</strong> Preferred 1-Year Contract (Shorter Terms Possible Upon Request)</p>
   </section>
 
 
@@ -199,9 +197,111 @@ $existingBookings = $bookingsQuery->fetchAll(PDO::FETCH_ASSOC);
 <div id="popup-modal" class="modal">
   <div class="modal-content">
     <span id="close-modal" class="close-button">&times;</span>
+    <div class="modal-icon"></div>
     <p id="modal-message"></p>
   </div>
 </div>
+
+<div id="loading-spinner" class="loading-spinner">
+  <div class="spinner"></div>
+</div>
+
+<style>
+.loading-spinner {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  position: relative;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.modal-icon {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 15px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-icon.success {
+  background: #4CAF50;
+}
+
+.modal-icon.error {
+  background: #f44336;
+}
+
+.modal-icon.success::after {
+  content: '✓';
+  color: white;
+  font-size: 30px;
+}
+
+.modal-icon.error::after {
+  content: '✕';
+  color: white;
+  font-size: 30px;
+}
+
+.close-button {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+}
+
+#modal-message {
+  margin: 15px 0;
+  font-size: 16px;
+  color: #333;
+}
+</style>
 
 <div id="payment-modal" class="modal">
   <div class="modal-content">
@@ -234,6 +334,7 @@ $existingBookings = $bookingsQuery->fetchAll(PDO::FETCH_ASSOC);
       <label for="payment-method">Choose payment method:</label>
       <select id="payment-method" required>
         <option value="wallet">Wallet</option>
+        <option value="counter">Pay at the Counter</option>
       </select>
       <button type="submit" class="payment-button">Confirm Booking</button>
     </form>

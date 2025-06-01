@@ -369,7 +369,7 @@ body {
 }
 
 /* Modal styles */
-.modal {
+#payment-modal {
   display: none;
   position: fixed;
   z-index: 1000;

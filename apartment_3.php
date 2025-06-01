@@ -65,6 +65,7 @@ $existingBookings = $bookingsQuery->fetchAll(PDO::FETCH_ASSOC);
             <a href="index.php"><img src="Pictures/logo-apt.png" alt="VitaVista Logo" class="logo-image"></a>
             <a href="index.php" class="logo">Vita<span>Vista</span></a>
         </div>
+        
         <nav class="nav-links">
             <?php if (isset($_SESSION['user'])): ?>
             <div class="profile-container">
@@ -109,10 +110,10 @@ $existingBookings = $bookingsQuery->fetchAll(PDO::FETCH_ASSOC);
   </div>
 
   <!-- Sticky Nav -->
-  <div class="sticky-header">
+  <div class="sticky-header" id="sticky-header">
     <a href="#overview">Overview</a>
-    <a href="#pricing">Pricing</a>
-    <a href="#details">Details</a>
+    <a href="#overview">Pricing</a>
+    <a href="#pricing">Details</a>
   </div>
 
   <div class="room-details-container">
@@ -129,9 +130,7 @@ $existingBookings = $bookingsQuery->fetchAll(PDO::FETCH_ASSOC);
   <!-- Pricing Section -->
   <section id="pricing">
     <h2>Pricing</h2>
-    <p><strong>Rental Price:</strong> Php 92,000/month</p>
-    <p><strong>Payment Terms:</strong> 1 Month Advance + 2 Months Security Deposit</p>
-    <p><strong>Contract Term:</strong> Preferred 1-Year Contract (Shorter Terms Possible Upon Request)</p>
+    <p><strong>Rental Price:</strong> ₱<?php echo number_format($pricePerNight, 2); ?>/night</p>
   </section>
 
   <!-- Details Section -->
@@ -195,12 +194,115 @@ $existingBookings = $bookingsQuery->fetchAll(PDO::FETCH_ASSOC);
 <div id="popup-modal" class="modal">
   <div class="modal-content">
     <span id="close-modal" class="close-button">&times;</span>
+    <div class="modal-icon"></div>
     <p id="modal-message"></p>
   </div>
 </div>
 
+<div id="loading-spinner" class="loading-spinner">
+  <div class="spinner"></div>
+</div>
+
+<style>
+.loading-spinner {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  position: relative;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.modal-icon {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 15px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-icon.success {
+  background: #4CAF50;
+}
+
+.modal-icon.error {
+  background: #f44336;
+}
+
+.modal-icon.success::after {
+  content: '✓';
+  color: white;
+  font-size: 30px;
+}
+
+.modal-icon.error::after {
+  content: '✕';
+  color: white;
+  font-size: 30px;
+}
+
+.close-button {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+}
+
+#modal-message {
+  margin: 15px 0;
+  font-size: 16px;
+  color: #333;
+}
+</style>
+
 <div id="payment-modal" class="modal">
   <div class="modal-content">
+  <img src="Pictures//studiotype/1.avif" alt="Apt">
     <span id="close-payment-modal" class="close-button">&times;</span>
     <h3>Booking Confirmation</h3>
     <div class="booking-summary">
@@ -228,9 +330,8 @@ $existingBookings = $bookingsQuery->fetchAll(PDO::FETCH_ASSOC);
     <form id="payment-form">
       <label for="payment-method">Choose payment method:</label>
       <select id="payment-method" required>
-        <option value="credit-card">Credit Card</option>
-        <option value="gcash">GCash</option>
-        <option value="bank-transfer">Bank Transfer</option>
+        <option value="wallet">Wallet</option>
+        <option value="counter">Pay at the Counter</option>
       </select>
       <button type="submit" class="payment-button">Confirm Booking</button>
     </form>
@@ -299,30 +400,10 @@ $existingBookings = $bookingsQuery->fetchAll(PDO::FETCH_ASSOC);
       if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1);
     });
 
-    // Leaflet map
-    const map = L.map('map').setView([14.9828, 120.4846], 15);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    L.marker([14.9828, 120.4846])
-      .addTo(map)
-      .bindPopup(`
-        <div class="popup-content">
-          <div class="popup-header">
-            <p class="apartment-title" style="font-size: 1rem">Mel's Mansion</p>
-            <p><i class="fa-solid fa-phone" style="color: #049f33;"></i> 09758257308</p>
-            <p><i class="fa-solid fa-location-dot" style="color: red;"></i> Pias, Porac, Pampanga</p>
-          </div>
-        </div>`);
-    setTimeout(() => { map.invalidateSize(); }, 300);
   </script>
     <script>
         (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="Hd_72aiMggC-PmJBKHMNU";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
     </script>
-    <script>
-  const pricePerNight = 15000; // Price specific to this apartment
-</script>
 <script src="scripts/booking.js"></script>
 </body>
 </html>

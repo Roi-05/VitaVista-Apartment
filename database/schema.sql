@@ -34,12 +34,17 @@ CREATE TABLE IF NOT EXISTS bookings (
     check_in_date DATE NOT NULL,
     check_out_date DATE NOT NULL,
     total_price DECIMAL(10, 2) NOT NULL,
-    payment_method VARCHAR(50) NOT NULL DEFAULT 'wallet',
+    payment_method ENUM('wallet', 'cash', 'card', 'bank_transfer' , 'counter') NOT NULL DEFAULT 'wallet',
+    payment_status ENUM('paid', 'pending', 'partial') NOT NULL DEFAULT 'pending',
     status ENUM('confirmed', 'cancellation_requested', 'cancelled', 'completed') NOT NULL DEFAULT 'confirmed',
+    booking_type ENUM('online', 'onsite') NOT NULL DEFAULT 'online',
+    created_by INT,
+    notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (apartment_id) REFERENCES apartments(id) ON DELETE CASCADE
+    FOREIGN KEY (apartment_id) REFERENCES apartments(id) ON DELETE CASCADE,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
 -- Insert sample data into the apartments table
@@ -103,3 +108,15 @@ CREATE TABLE IF NOT EXISTS cancellation_requests (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4; 
+
+CREATE TABLE IF NOT EXISTS password_resets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(64) NOT NULL,
+    expiry DATETIME NOT NULL,
+    used TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX (token),
+    INDEX (expiry)
+); 

@@ -58,17 +58,26 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Chart setup
-function setupCharts() {
+async function setupCharts() {
+    try {
+        const response = await fetch('get_chart_data.php');
+        const data = await response.json();
+
+        if (!data.success) {
+            console.error('Failed to fetch chart data:', data.message);
+            return;
+        }
+
     // Revenue Chart
     const revenueCtx = document.getElementById('revenueChart')?.getContext('2d');
     if (revenueCtx) {
         new Chart(revenueCtx, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    labels: data.revenue.labels,
                 datasets: [{
                     label: 'Revenue',
-                    data: [12000, 19000, 15000, 25000, 22000, 30000],
+                        data: data.revenue.data,
                     borderColor: '#001166',
                     tension: 0.4
                 }]
@@ -79,6 +88,16 @@ function setupCharts() {
                     legend: {
                         position: 'top',
                     }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '₱' + value.toLocaleString();
+                                }
+                            }
+                        }
                 }
             }
         });
@@ -90,15 +109,23 @@ function setupCharts() {
         new Chart(bookingCtx, {
             type: 'bar',
             data: {
-                labels: ['Studio', '1-Bedroom', '2-Bedroom', 'Penthouse'],
+                    labels: data.bookingStats.labels,
                 datasets: [{
                     label: 'Bookings',
-                    data: [30, 45, 25, 15],
+                        data: data.bookingStats.data,
                     backgroundColor: 'gold'
                 }]
             },
             options: {
-                responsive: true
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
             }
         });
     }
@@ -109,14 +136,19 @@ function setupCharts() {
         new Chart(apartmentCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Studio', '1-Bedroom', '2-Bedroom', 'Penthouse'],
+                    labels: data.popularApartments.labels,
                 datasets: [{
-                    data: [40, 30, 20, 10],
+                        data: data.popularApartments.data,
                     backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
                 }]
             },
             options: {
-                responsive: true
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
             }
         });
     }
@@ -127,18 +159,36 @@ function setupCharts() {
         new Chart(userCtx, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    labels: data.userGrowth.labels,
                 datasets: [{
                     label: 'New Users',
-                    data: [10, 15, 25, 30, 45, 60],
+                        data: data.userGrowth.data,
                     borderColor: '#4BC0C0',
-                    tension: 0.4
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(75, 192, 192, 0.1)'
                 }]
             },
             options: {
-                responsive: true
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
             }
         });
+        }
+    } catch (error) {
+        console.error('Error setting up charts:', error);
     }
 }
 
@@ -150,20 +200,17 @@ function validateApartmentForm(formData) {
         errors.push('Apartment type is required');
     }
     
-    if (!formData.get('unit')) {
+    const unit = formData.get('unit');
+    if (!unit) {
         errors.push('Unit number is required');
+    } else if (!/^Unit\s+\d+$/.test(unit)) {
+        errors.push('Unit must be in the format "Unit" followed by a number (e.g., "Unit 1")');
     }
     
     const price = parseFloat(formData.get('price'));
     if (isNaN(price) || price <= 0) {
         errors.push('Price must be greater than 0');
     }
-    
-    const availability = parseInt(formData.get('availability'));
-    if (isNaN(availability) || availability < 0) {
-        errors.push('Availability must be 0 or greater');
-    }
-    
     return errors;
 }
 
@@ -217,29 +264,17 @@ function showAddApartmentModal() {
         <div class="form-group">
             <label for="unit">Unit Number</label>
             <input type="text" id="unit" name="unit" required 
-                   pattern="[A-Za-z0-9-]+" 
-                   title="Only letters, numbers, and hyphens allowed">
+                pattern="Unit\\s+\\d+" 
+                title="Format: 'Unit' followed by a number (e.g., 'Unit 1', 'Unit 2', 'Unit 3')"
+                placeholder="e.g., Unit 1">
         </div>
         <div class="form-group">
             <label for="price">Price per Night (₱)</label>
             <input type="number" id="price" name="price" required min="0" step="0.01">
         </div>
         <div class="form-group">
-            <label for="availability">Availability</label>
-            <input type="number" id="availability" name="availability" required min="0">
-        </div>
-        <div class="form-group">
             <label for="description">Description</label>
             <textarea id="description" name="description" rows="4"></textarea>
-        </div>
-        <div class="form-group">
-            <label for="amenities">Amenities</label>
-            <div class="checkbox-group">
-                <label><input type="checkbox" name="amenities[]" value="wifi"> WiFi</label>
-                <label><input type="checkbox" name="amenities[]" value="pool"> Pool</label>
-                <label><input type="checkbox" name="amenities[]" value="gym"> Gym</label>
-                <label><input type="checkbox" name="amenities[]" value="parking"> Parking</label>
-            </div>
         </div>
         <div class="form-actions">
             <button type="submit" class="btn-primary">Add Apartment</button>
@@ -250,9 +285,13 @@ function showAddApartmentModal() {
     // Add form submission handler
     form.onsubmit = async function(e) {
         e.preventDefault();
+        console.log('Form submission started');
         
         const formData = new FormData(form);
+        console.log('Form data:', Object.fromEntries(formData));
+        
         const errors = validateApartmentForm(formData);
+        console.log('Validation errors:', errors);
         
         if (errors.length > 0) {
             showErrors(errors);
@@ -260,19 +299,25 @@ function showAddApartmentModal() {
         }
         
         try {
-            const response = await fetch('/api/apartments', {
+            console.log('Sending request to apartment_handler.php');
+            const response = await fetch('apartment_handler.php', {
                 method: 'POST',
                 body: formData
             });
             
+            console.log('Response status:', response.status);
+            const data = await response.json();
+            console.log('Response data:', data);
+            
             if (!response.ok) {
-                throw new Error('Failed to add apartment');
+                throw new Error(data.message || 'Failed to add apartment');
             }
             
             showSuccess('Apartment added successfully');
             closeModal('apartmentModal');
             loadApartments(); // Refresh the apartments list
         } catch (error) {
+            console.error('Error:', error);
             showError('Failed to add apartment: ' + error.message);
         }
     };
@@ -281,14 +326,76 @@ function showAddApartmentModal() {
 }
 
 function editApartment(id) {
-    // Implement edit functionality
-    console.log('Editing apartment:', id);
+    const modal = document.getElementById('apartmentModal');
+    const form = document.getElementById('apartmentForm');
+    
+    // Clear form
+    form.innerHTML = `
+        <div class="form-group">
+            <label for="price">Price per Night (₱)</label>
+            <input type="number" id="price" name="price" required min="0" step="0.01">
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Update Price</button>
+            <button type="button" class="btn-secondary" onclick="closeModal('apartmentModal')">Cancel</button>
+        </div>
+    `;
+    
+    // Add form submission handler
+    form.onsubmit = async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        formData.append('id', id);
+        
+        try {
+            const response = await fetch('edit_apartment.php', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to update apartment');
+            }
+            
+            showSuccess('Apartment price updated successfully');
+            closeModal('apartmentModal');
+            loadApartments(); // Refresh the apartments list
+        } catch (error) {
+            showError('Failed to update apartment: ' + error.message);
+        }
+    };
+    
+    modal.style.display = 'block';
 }
 
 function deleteApartment(id) {
     if (confirm('Are you sure you want to delete this apartment?')) {
-        // Implement delete functionality
-        console.log('Deleting apartment:', id);
+        fetch('delete_apartment.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: id })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSuccess(data.message);
+                // Remove the apartment card from the UI
+                const apartmentCard = document.querySelector(`.apartment-card[data-id="${id}"]`);
+                if (apartmentCard) {
+                    apartmentCard.remove();
+                }
+            } else {
+                showError(data.message);
+            }
+        })
+        .catch(error => {
+            showError('Failed to delete apartment: ' + error.message);
+        });
     }
 }
 
@@ -434,7 +541,85 @@ function loadUsers() {
 }
 
 function loadApartments() {
-    // Implement AJAX call to load apartments
+    fetch('get_apartments.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const apartmentsGrid = document.querySelector('.apartments-grid');
+                apartmentsGrid.innerHTML = '';
+                
+                data.apartments.forEach(apt => {
+                    const card = document.createElement('div');
+                    card.className = 'apartment-card';
+                    card.setAttribute('data-id', apt.id);
+                    
+                    // Get image path based on type
+                    let imagePath = '';
+                    switch(apt.type.toLowerCase()) {
+                        case 'studio':
+                            imagePath = 'Pictures/studiotype/1.avif';
+                            break;
+                        case '1-bedroom':
+                            imagePath = 'Pictures/1_bedroom/1.png';
+                            break;
+                        case '2-bedroom':
+                            imagePath = 'Pictures/2_bedroom/1.png';
+                            break;
+                        case 'penthouse':
+                            imagePath = 'Pictures/penthouse/1.avif';
+                            break;
+                    }
+                    
+                    card.innerHTML = `
+                        <div class="apartment-image">
+                            <img src="${imagePath}" alt="${apt.type}">
+                            <span class="status-badge-apt ${apt.availability > 0 ? 'available' : 'occupied'}">
+                                <i class="fas ${apt.availability > 0 ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                                ${apt.availability > 0 ? 'Available' : 'Occupied'}
+                            </span>
+                        </div>
+                        <div class="apartment-content">
+                            <div class="apartment-header">
+                                <h3>${apt.type}</h3>
+                                <p class="unit-number">${apt.unit}</p>
+                            </div>
+                            <div class="apartment-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-peso-sign"></i>
+                                    <div class="detail-info">
+                                        <span class="label">Price per Night</span>
+                                        <span class="value">₱${parseFloat(apt.price_per_night).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-check"></i>
+                                    <div class="detail-info">
+                                        <span class="label">Total Bookings</span>
+                                        <span class="value">${apt.total_bookings || 0}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="apartment-actions">
+                                <button class="edit-btn" onclick="editApartment(${apt.id})">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="delete-btn" onclick="deleteApartment(${apt.id})">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    apartmentsGrid.appendChild(card);
+                });
+            } else {
+                showError('Failed to load apartments');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading apartments:', error);
+            showError('Failed to load apartments');
+        });
 }
 
 // Utility Functions

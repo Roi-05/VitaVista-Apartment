@@ -29,24 +29,37 @@ try {
     $stmt->execute([$data['apartmentId']]);
     $apartment = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Check wallet balance
-    $stmt = $pdo->prepare("SELECT w.id, w.balance FROM wallets w WHERE w.user_id = ?");
-    $stmt->execute([$_SESSION['user']['id']]);
-    $wallet = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$wallet) {
-        throw new Exception('Wallet not found. Please deposit funds first.');
+    // Check if it's an on-site booking
+    $isOnsiteBooking = isset($data['bookingType']) && $data['bookingType'] === 'onsite';
+    $paymentMethod = $data['paymentMethod'] ?? 'wallet';
+    
+    // Set payment status based on payment method
+    $paymentStatus = 'pending';
+    if ($paymentMethod === 'wallet' && !$isOnsiteBooking) {
+        $paymentStatus = 'paid';
     }
 
-    if ($wallet['balance'] < $data['totalPrice']) {
-        throw new Exception('Insufficient wallet balance. Please deposit more funds.');
+    if ($paymentMethod === 'wallet' && !$isOnsiteBooking) {
+        // For online wallet payments, check wallet balance
+        $stmt = $pdo->prepare("SELECT w.id, w.balance FROM wallets w WHERE w.user_id = ?");
+        $stmt->execute([$_SESSION['user']['id']]);
+        $wallet = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$wallet) {
+            throw new Exception('Wallet not found. Please deposit funds first.');
+        }
+
+        if ($wallet['balance'] < $data['totalPrice']) {
+            throw new Exception('Insufficient wallet balance. Please deposit more funds.');
+        }
     }
 
     // Insert booking
     $stmt = $pdo->prepare("
         INSERT INTO bookings 
-        (user_id, apartment_id, check_in_date, check_out_date, total_price, payment_method)
-        VALUES (?, ?, ?, ?, ?, ?)
+        (user_id, apartment_id, check_in_date, check_out_date, total_price, 
+         payment_method, payment_status, booking_type, created_by, notes)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     if (!$stmt->execute([
@@ -55,7 +68,11 @@ try {
         $data['checkIn'],
         $data['checkOut'],
         $data['totalPrice'],
-        $data['paymentMethod']
+        $paymentMethod,
+        $paymentStatus,
+        $isOnsiteBooking ? 'onsite' : 'online',
+        $isOnsiteBooking ? $_SESSION['user']['id'] : null,
+        $data['notes'] ?? null
     ])) {
         throw new Exception('Failed to create booking');
     }
@@ -68,27 +85,29 @@ try {
         throw new Exception('Failed to update apartment availability');
     }
 
-    // Deduct from wallet
-    $stmt = $pdo->prepare("UPDATE wallets SET balance = balance - ? WHERE id = ?");
-    if (!$stmt->execute([$data['totalPrice'], $wallet['id']])) {
-        throw new Exception('Failed to process payment');
-    }
+    if ($paymentMethod === 'wallet' && !$isOnsiteBooking) {
+        // For online wallet payments, deduct from wallet
+        $stmt = $pdo->prepare("UPDATE wallets SET balance = balance - ? WHERE id = ?");
+        if (!$stmt->execute([$data['totalPrice'], $wallet['id']])) {
+            throw new Exception('Failed to process payment');
+        }
 
-    // Record transaction
-    $stmt = $pdo->prepare("
-        INSERT INTO transactions 
-        (wallet_id, type, amount, description) 
-        VALUES (?, 'payment', ?, ?)
-    ");
-    $description = "Payment for booking #{$bookingId}";
-    if (!$stmt->execute([$wallet['id'], $data['totalPrice'], $description])) {
-        throw new Exception('Failed to record transaction');
-    }
+        // Record transaction
+        $stmt = $pdo->prepare("
+            INSERT INTO transactions 
+            (wallet_id, type, amount, description, payment_method) 
+            VALUES (?, 'payment', ?, ?, ?)
+        ");
+        $description = "Payment for booking #{$bookingId}";
+        if (!$stmt->execute([$wallet['id'], $data['totalPrice'], $description, $paymentMethod])) {
+            throw new Exception('Failed to record transaction');
+        }
 
-    // Get new balance
-    $stmt = $pdo->prepare("SELECT balance FROM wallets WHERE id = ?");
-    $stmt->execute([$wallet['id']]);
-    $newBalance = $stmt->fetchColumn();
+        // Get new balance
+        $stmt = $pdo->prepare("SELECT balance FROM wallets WHERE id = ?");
+        $stmt->execute([$wallet['id']]);
+        $newBalance = $stmt->fetchColumn();
+    }
 
     // Send email notification
     $emailData = [
@@ -97,7 +116,9 @@ try {
         'unit' => $apartment['unit'],
         'check_in' => $data['checkIn'],
         'check_out' => $data['checkOut'],
-        'total_price' => number_format($data['totalPrice'], 2)
+        'total_price' => number_format($data['totalPrice'], 2),
+        'payment_method' => $paymentMethod,
+        'payment_status' => $paymentStatus
     ];
 
     $emailBody = getEmailTemplate('booking', $emailData);
@@ -109,7 +130,7 @@ try {
     echo json_encode([
         'success' => true,
         'message' => 'Booking confirmed successfully',
-        'newBalance' => $newBalance
+        'newBalance' => $newBalance ?? null
     ]);
 
 } catch (Exception $e) {

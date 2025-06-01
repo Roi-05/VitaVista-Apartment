@@ -24,8 +24,10 @@ $userId = $_SESSION['user']['id'];
 try {
     // First, verify that the booking belongs to the user and is upcoming
     $stmt = $pdo->prepare("
-        SELECT * FROM bookings 
-        WHERE id = ? AND user_id = ? AND check_in_date > NOW()
+        SELECT b.*, a.id as apartment_id 
+        FROM bookings b
+        JOIN apartments a ON b.apartment_id = a.id
+        WHERE b.id = ? AND b.user_id = ? AND b.check_in_date > NOW()
     ");
     $stmt->execute([$bookingId, $userId]);
     $booking = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -36,12 +38,29 @@ try {
         exit;
     }
 
-    // Delete the booking
-    $stmt = $pdo->prepare("DELETE FROM bookings WHERE id = ? AND user_id = ?");
-    if ($stmt->execute([$bookingId, $userId])) {
+    // Start transaction
+    $pdo->beginTransaction();
+
+    try {
+        // Delete the booking
+        $stmt = $pdo->prepare("DELETE FROM bookings WHERE id = ? AND user_id = ?");
+        if (!$stmt->execute([$bookingId, $userId])) {
+            throw new Exception('Failed to cancel booking');
+        }
+
+        // Increase apartment availability
+        $stmt = $pdo->prepare("UPDATE apartments SET availability = availability + 1 WHERE id = ?");
+        if (!$stmt->execute([$booking['apartment_id']])) {
+            throw new Exception('Failed to update apartment availability');
+        }
+
+        // Commit transaction
+        $pdo->commit();
         echo json_encode(['success' => true, 'message' => 'Booking cancelled successfully']);
-    } else {
-        throw new Exception('Failed to cancel booking');
+    } catch (Exception $e) {
+        // Rollback transaction on error
+        $pdo->rollBack();
+        throw $e;
     }
 } catch (Exception $e) {
     http_response_code(500);

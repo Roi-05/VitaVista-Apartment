@@ -69,23 +69,6 @@ if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin') {
         </nav>
     </header>
 
-    <div class="chatbox-container">
-        <div class="chat-window">
-            <div class="chat-header">
-                <h3>Chat The Owner</h3>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="chat-body"></div>
-            <div class="chat-input">
-                <input type="text" placeholder="Type your message...">
-                <button class="send-btn">Send</button>
-            </div>
-        </div>
-        <div class="chat-button">
-            <i style="font-size: 2rem;" class="fas fa-comment-dots"></i>
-        </div>
-    </div>
-
     <section id="first" class="first">
         <video autoplay muted loop class="background-video">
             <source src="Pictures/cinematic.mp4" type="video/mp4">
